@@ -39,17 +39,16 @@ import com.coleblvck.shelf.ui.theme.colorWithAlpha
 @Composable
 fun TopBox(modifier: Modifier) {
     val pagerState = rememberPagerState(
-        pageCount = { 2 }
+        pageCount = { 3 }
     )
     Box(modifier = modifier) {
         HorizontalPager(state = pagerState) {
-            TopBoxWidgets().GreetingCard()
-            TopBoxWidgets().GreetingCard()
+            TopBoxCards().GreetingCard()
         }
     }
 }
 
-class TopBoxWidgets {
+class TopBoxCards {
     @Composable
     fun GreetingCard() {
         var hideSystemUI by remember {

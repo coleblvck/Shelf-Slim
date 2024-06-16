@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -72,3 +74,19 @@ fun Context.findActivity(): Activity {
 }
 
 var showAppDrawer: Boolean = false
+
+fun openAppSettings(context: Context, app: App) {
+    val intent = Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", app.packageName, null)
+    )
+    context.startActivity(intent)
+}
+
+fun uninstallApp(context: Context, app: App) {
+    val intent = Intent(
+        Intent.ACTION_DELETE,
+        Uri.fromParts("package", app.packageName, null)
+    )
+    context.startActivity(intent)
+}

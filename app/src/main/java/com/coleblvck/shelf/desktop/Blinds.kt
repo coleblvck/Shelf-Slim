@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -19,6 +20,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -37,6 +39,8 @@ import androidx.compose.ui.unit.sp
 import com.coleblvck.shelf.content.App
 import com.coleblvck.shelf.content.AppIcon
 import com.coleblvck.shelf.content.appList
+import com.coleblvck.shelf.content.openAppSettings
+import com.coleblvck.shelf.content.uninstallApp
 import com.coleblvck.shelf.ui.theme.colorWithAlpha
 
 @Composable
@@ -133,8 +137,19 @@ fun SwipedBlindAppItem(app: App) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(onClick = { }) {
-                Icon(Icons.Filled.Info, "")
+            IconButton(onClick = { openAppSettings(context, app) }) {
+                Icon(
+                    modifier = Modifier.size(28.dp),
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = ""
+                )
+            }
+            IconButton(onClick = { uninstallApp(context, app) }) {
+                Icon(
+                    modifier = Modifier.size(28.dp),
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = ""
+                )
             }
             Row(
                 modifier = Modifier.weight(1f),
