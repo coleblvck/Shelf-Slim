@@ -2,6 +2,7 @@ package com.coleblvck.shelf.desktop
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,8 +12,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
@@ -41,80 +46,35 @@ import com.coleblvck.shelf.content.showAppDrawer
 import com.coleblvck.shelf.ui.theme.colorWithAlpha
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Desktop(modifier: Modifier = Modifier) {
-    var displayAppDrawer by remember {
+    val context = LocalContext.current
+    fetchApps(context)
+    var appDrawerDisplayed by remember {
         mutableStateOf(false)
     }
     BackHandler {
-        displayAppDrawer = false
-    }
-    val context = LocalContext.current
-    fetchApps(context)
-    var hideSystemUI by remember {
-        mutableStateOf(true)
-    }
-    val view = LocalView.current
-    val window = (view.context as Activity).window
-    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-    if (hideSystemUI) {
-        insetsController.apply {
-            hide(WindowInsetsCompat.Type.systemBars())
-            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
-    } else {
-        insetsController.apply { show(WindowInsetsCompat.Type.systemBars()) }
+        appDrawerDisplayed = false
     }
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp),
+            .padding(vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Card(
-            modifier = Modifier
-                .weight(1F)
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                colorWithAlpha(MaterialTheme.colorScheme.tertiary),
-                MaterialTheme.colorScheme.onTertiary,
-                MaterialTheme.colorScheme.tertiary,
-                MaterialTheme.colorScheme.onTertiary
-            )
-        ) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "Hola", fontSize = 60.sp, fontWeight = FontWeight.Bold)
-
-                    IconButton(onClick = {
-                        hideSystemUI = !hideSystemUI
-                    }) {
-                        Icon(
-                            modifier = Modifier.size(28.dp),
-                            imageVector = (if (hideSystemUI) {
-                                Icons.Filled.KeyboardArrowDown
-                            } else {
-                                Icons.Filled.KeyboardArrowUp
-                            }),
-                            contentDescription = (if (hideSystemUI) {
-                                "Show system UI"
-                            } else {
-                                "Hide system UI"
-                            })
-                        )
-
-                    }
-                }
-
-            }
-        }
+        TopBox(
+            modifier =
+            Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        )
         Card(
             modifier = Modifier
                 .height(48.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
             colors = CardDefaults.cardColors(
                 colorWithAlpha(MaterialTheme.colorScheme.primary),
                 MaterialTheme.colorScheme.onPrimary,
@@ -131,9 +91,14 @@ fun Desktop(modifier: Modifier = Modifier) {
                 Box {
 
                 }
-                IconButton(onClick = { displayAppDrawer = !displayAppDrawer }) {
+                IconButton(onClick = { appDrawerDisplayed = !appDrawerDisplayed }) {
                     Icon(
-                        Icons.Filled.Menu, "Show Apps",
+                        if (appDrawerDisplayed) {
+                            Icons.Filled.ArrowBack
+                        } else {
+                            Icons.Filled.Menu
+                        },
+                        "Show Apps",
                         modifier = Modifier.size(32.dp),
                     )
                 }
@@ -144,8 +109,20 @@ fun Desktop(modifier: Modifier = Modifier) {
                 .weight(2F)
                 .fillMaxWidth()
         ) {
-            if (displayAppDrawer) {
-                Blinds()
+            if (appDrawerDisplayed) {
+                when (currentDrawerType) {
+                    DrawerType.BLINDS -> {
+                        Blinds()
+                    }
+
+                    DrawerType.BOXES -> {
+                        Blinds()
+                    }
+
+                    DrawerType.GRID -> {
+                        Blinds()
+                    }
+                }
             }
         }
     }
