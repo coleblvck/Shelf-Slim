@@ -30,7 +30,9 @@ data class App(
     val icon: Drawable?
 )
 
-var appList: List<App> by mutableStateOf(emptyList())
+var unfilteredAppsList: List<App> by mutableStateOf(emptyList())
+
+var filteredAppList: List<App> by mutableStateOf(emptyList())
 
 fun fetchApps(context: Context) {
     val packageManager = context.packageManager
@@ -52,15 +54,15 @@ fun fetchApps(context: Context) {
         }
     }
 
-    appList = userAppList
+    unfilteredAppsList = userAppList
 }
 
 @Composable
-fun AppIcon(app: App) {
+fun AppIcon(app: App, modifier: Modifier) {
     Image(
         bitmap = app.icon!!.toBitmap().asImageBitmap(), contentDescription = "${app.name} icon",
         contentScale = ContentScale.Crop,
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
             .size(40.dp)
             .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
@@ -76,16 +78,15 @@ fun Context.findActivity(): Activity {
     throw IllegalStateException("no activity")
 }
 
-var showAppDrawer: Boolean = false
-
-fun openAppSettings(context: Context, app: App) {
+fun openAppSettings(activity: Activity, app: App) {
     val intent = Intent(
         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
         Uri.fromParts("package", app.packageName, null)
     )
-    context.startActivity(intent)
+    activity.startActivity(intent)
 }
 
+/*
 fun uninstallApp(context: Context, app: App) {
     val intent = Intent(
         Intent.ACTION_DELETE,
@@ -93,3 +94,5 @@ fun uninstallApp(context: Context, app: App) {
     )
     context.startActivity(intent)
 }
+
+ */

@@ -12,20 +12,19 @@ var currentDrawerType: DrawerType = defaultDrawerType
 
 
 @Composable
-fun Drawer() {
-    if (appDrawerDisplayed) {
-        when (currentDrawerType) {
-            DrawerType.BLINDS -> {
-                Blinds()
-            }
+fun Drawer(type: DrawerType) {
+    when (type) {
+        DrawerType.BLINDS -> {
+            Blinds()
+        }
 
-            DrawerType.BOXES -> {
-                Blinds()
-            }
+        DrawerType.BOXES -> {
+            Blinds()
+        }
 
-            DrawerType.GRID -> {
-                Blinds()
-            }
+        DrawerType.GRID -> {
+            Blinds()
         }
     }
+
 }
