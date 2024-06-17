@@ -43,14 +43,13 @@ import com.coleblvck.shelf.content.openAppSettings
 import com.coleblvck.shelf.content.uninstallApp
 import com.coleblvck.shelf.ui.theme.colorWithAlpha
 
+
+
 @Composable
 fun Blinds() {
-    val apps = remember {
-        appList
-    }
     LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         items(
-            items = apps.sortedBy { ap: App -> ap.name },
+            items = appList.sortedBy { ap: App -> ap.name },
             itemContent = {
                 BlindsAppItem(app = it)
             }

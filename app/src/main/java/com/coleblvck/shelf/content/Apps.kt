@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
@@ -27,7 +30,7 @@ data class App(
     val icon: Drawable?
 )
 
-var appList: List<App> = emptyList()
+var appList: List<App> by mutableStateOf(emptyList())
 
 fun fetchApps(context: Context) {
     val packageManager = context.packageManager

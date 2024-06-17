@@ -46,14 +46,14 @@ import com.coleblvck.shelf.content.showAppDrawer
 import com.coleblvck.shelf.ui.theme.colorWithAlpha
 
 
+var appDrawerDisplayed by mutableStateOf(false)
+
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Desktop(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     fetchApps(context)
-    var appDrawerDisplayed by remember {
-        mutableStateOf(false)
-    }
     BackHandler {
         appDrawerDisplayed = false
     }
@@ -109,21 +109,7 @@ fun Desktop(modifier: Modifier = Modifier) {
                 .weight(2F)
                 .fillMaxWidth()
         ) {
-            if (appDrawerDisplayed) {
-                when (currentDrawerType) {
-                    DrawerType.BLINDS -> {
-                        Blinds()
-                    }
-
-                    DrawerType.BOXES -> {
-                        Blinds()
-                    }
-
-                    DrawerType.GRID -> {
-                        Blinds()
-                    }
-                }
-            }
+            Drawer()
         }
     }
 }

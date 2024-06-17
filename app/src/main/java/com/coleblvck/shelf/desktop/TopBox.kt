@@ -48,12 +48,11 @@ fun TopBox(modifier: Modifier) {
     }
 }
 
+var hideSystemUI by mutableStateOf(true)
+
 class TopBoxCards {
     @Composable
     fun GreetingCard() {
-        var hideSystemUI by remember {
-            mutableStateOf(true)
-        }
         val view = LocalView.current
         val window = (view.context as Activity).window
         val insetsController = WindowCompat.getInsetsController(window, window.decorView)
