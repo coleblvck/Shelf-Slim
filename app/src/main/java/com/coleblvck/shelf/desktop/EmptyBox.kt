@@ -19,7 +19,7 @@ fun EmptyBox() {
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 12.dp)
-            .combinedClickable(onDoubleClick = { topBoxVisible = !topBoxVisible }) { },
+            .combinedClickable(onDoubleClick = { utilityBoxVisible = !utilityBoxVisible }) { },
         colors = CardDefaults.cardColors(
             Color.Transparent,
             MaterialTheme.colorScheme.onTertiary,

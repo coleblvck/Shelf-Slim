@@ -1,5 +1,6 @@
 package com.coleblvck.shelf.desktop
 
+import android.app.Activity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +13,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.coleblvck.shelf.content.fetchApps
 import com.coleblvck.shelf.content.filteredAppList
 import com.coleblvck.shelf.content.unfilteredAppsList
@@ -25,6 +30,17 @@ var appDrawerDisplayed by mutableStateOf(false)
 @Composable
 fun Desktop(modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    val window = (context as Activity).window
+    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+    if (hideSystemUI) {
+        insetsController.apply {
+            hide(WindowInsetsCompat.Type.systemBars())
+            systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+    } else {
+        insetsController.apply { show(WindowInsetsCompat.Type.systemBars()) }
+    }
     fetchApps(context)
     filteredAppList = unfilteredAppsList
     Column(

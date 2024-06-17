@@ -4,21 +4,13 @@ import android.app.Activity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,18 +46,6 @@ var hideSystemUI by mutableStateOf(true)
 class TopBoxCards {
     @Composable
     fun GreetingCard() {
-        val view = LocalView.current
-        val window = (view.context as Activity).window
-        val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-        if (hideSystemUI) {
-            insetsController.apply {
-                hide(WindowInsetsCompat.Type.systemBars())
-                systemBarsBehavior =
-                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        } else {
-            insetsController.apply { show(WindowInsetsCompat.Type.systemBars()) }
-        }
 
         Card(
             modifier = Modifier
@@ -83,48 +63,6 @@ class TopBoxCards {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(text = "Hola", fontSize = 60.sp, fontWeight = FontWeight.Bold)
-
-                    Row {
-                        IconButton(onClick = {
-                            hideSystemUI = !hideSystemUI
-                        }) {
-                            Icon(
-                                modifier = Modifier.size(28.dp),
-                                imageVector = (
-                                        if (hideSystemUI) {
-                                            Icons.Filled.KeyboardArrowDown
-                                        } else {
-                                            Icons.Filled.KeyboardArrowUp
-                                        }
-                                        ),
-                                contentDescription = (
-                                        if (hideSystemUI) {
-                                            "Show system UI"
-                                        } else {
-                                            "Hide system UI"
-                                        }
-                                        )
-                            )
-
-                        }
-                        IconButton(onClick = {
-                            utilityBoxVisible = !utilityBoxVisible
-                        }) {
-                            Icon(
-                                modifier = Modifier.size(28.dp),
-                                imageVector = (
-                                Icons.Filled.Search),
-                                contentDescription = (
-                                        if (utilityBoxVisible) {
-                                            "Hide Utility Box"
-                                        } else {
-                                            "Show Utility Box"
-                                        }
-                                        )
-                            )
-
-                        }
-                    }
                 }
 
             }

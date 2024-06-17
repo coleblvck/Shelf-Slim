@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.coleblvck.shelf.desktop.Desktop
-import com.coleblvck.shelf.desktop.FAB
 import com.coleblvck.shelf.ui.theme.ShelfTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +28,6 @@ class MainActivity : ComponentActivity() {
                     color = Color.Transparent
                 ) {
                     Desktop()
-                    FAB()
                 }
             }
         }
