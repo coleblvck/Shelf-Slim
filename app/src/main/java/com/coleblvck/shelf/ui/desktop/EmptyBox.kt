@@ -1,4 +1,4 @@
-package com.coleblvck.shelf.desktop
+package com.coleblvck.shelf.ui.desktop
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -14,12 +14,12 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EmptyBox() {
+fun EmptyBox(dashboardVisibilityToggle: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 12.dp)
-            .combinedClickable(onDoubleClick = { utilityBoxVisible = !utilityBoxVisible }) { },
+            .combinedClickable(onDoubleClick = dashboardVisibilityToggle ) { },
         colors = CardDefaults.cardColors(
             Color.Transparent,
             MaterialTheme.colorScheme.onTertiary,

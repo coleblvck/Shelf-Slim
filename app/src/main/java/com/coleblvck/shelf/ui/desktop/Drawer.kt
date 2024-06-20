@@ -1,6 +1,7 @@
-package com.coleblvck.shelf.desktop
+package com.coleblvck.shelf.ui.desktop
 
 import androidx.compose.runtime.Composable
+import com.coleblvck.shelf.content.App
 
 enum class DrawerType {
     BLINDS, BOXES, GRID
@@ -8,22 +9,22 @@ enum class DrawerType {
 
 val defaultDrawerType: DrawerType = DrawerType.BLINDS
 
-var currentDrawerType: DrawerType = defaultDrawerType
+var currentDrawerType: DrawerType = DrawerType.BOXES
 
 
 @Composable
-fun Drawer(type: DrawerType) {
+fun Drawer(type: DrawerType, apps: List<App>) {
     when (type) {
         DrawerType.BLINDS -> {
-            Blinds()
+            Blinds(apps = apps)
         }
 
         DrawerType.BOXES -> {
-            Blinds()
+            Boxes(apps = apps)
         }
 
         DrawerType.GRID -> {
-            Blinds()
+            Blinds(apps = apps)
         }
     }
 
