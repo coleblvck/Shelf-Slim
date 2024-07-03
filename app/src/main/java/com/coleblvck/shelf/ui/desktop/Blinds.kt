@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -18,13 +19,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemKey
 import com.coleblvck.shelf.content.App
 import com.coleblvck.shelf.content.AppIcon
 import com.coleblvck.shelf.content.openAppSettings
@@ -32,10 +34,9 @@ import com.coleblvck.shelf.ui.theme.colorWithAlpha
 
 
 @Composable
-fun Blinds(apps: List<App>) {
-    val appList = remember {
-        apps.sortedBy { ap: App -> ap.name }
-    }
+fun Blinds(
+    apps: LazyPagingItems<App>,
+    ) {
     Card(
         modifier = Modifier
             .fillMaxSize()
@@ -48,18 +49,22 @@ fun Blinds(apps: List<App>) {
             MaterialTheme.colorScheme.onBackground,
         ),
     ) {
+        val blindsState = rememberLazyListState()
         LazyColumn(
+            state = blindsState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp)
                 .wrapContentHeight(), verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(
-                count = appList.size,
-                contentType = { appList[0] },
-                key = { appList[it].packageName },
+                count = apps.itemCount,
+                contentType = { apps[0] },
+                key = apps.itemKey { it.packageName },
                 itemContent = { index ->
-                    BlindsAppItem(app = appList[index])
+                    apps[index]?.let {
+                        BlindsAppItem(app = it)
+                    }
                 }
             )
         }
@@ -91,7 +96,7 @@ fun BlindsAppItem(app: App) {
         shape = RoundedCornerShape(corner = CornerSize(16.dp))
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            AppIcon(app = app, modifier = Modifier.clickable {
+            AppIcon(bitmap = app.bitmap, modifier = Modifier.clickable {
                 openAppSettings(context as Activity, app)
             })
             Text(

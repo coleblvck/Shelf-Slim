@@ -2,25 +2,29 @@ package com.coleblvck.shelf.ui
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.paging.PagingData
+import androidx.paging.filter
 import com.coleblvck.shelf.content.App
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
-class ShelfViewModel() : ViewModel() {
+class ShelfViewModel : ViewModel() {
 
     private val contextLiveData = MutableLiveData<Context>()
 
-    private var _apps: MutableStateFlow<List<App>> = MutableStateFlow(emptyList())
-    val apps: StateFlow<List<App>> = _apps.asStateFlow()
+    var apps: Flow<PagingData<App>> = flowOf(PagingData.from(emptyList()))
 
-    var filteredAppList: List<App> by mutableStateOf(emptyList())
+    var filteredAppList: Flow<PagingData<App>> = flowOf(PagingData.from(emptyList()))
 
     private val _uiState = MutableStateFlow(ShelfUiState())
     val uiState: StateFlow<ShelfUiState> = _uiState.asStateFlow()
@@ -59,10 +63,18 @@ class ShelfViewModel() : ViewModel() {
         fetchApps()
         _uiState.update { currentState ->
             currentState.copy(
-                apps = _apps.value
+                apps = apps
             )
         }
 
+    }
+
+    fun filterApps(term: String) {
+        filteredAppList = apps.map { pagingData: PagingData<App> ->
+            pagingData.filter { app: App ->
+                app.name.lowercase().contains(term.lowercase())
+            }
+        }
     }
 
     fun fetchApps() {
@@ -77,16 +89,18 @@ class ShelfViewModel() : ViewModel() {
         val userAppList = ArrayList<App>()
         for (appInfo in allAppsList) {
             if (appInfo.activityInfo.packageName != context.packageName) {
+                val bitmap: ImageBitmap = appInfo.activityInfo.loadIcon(packageManager).toBitmap().asImageBitmap()
                 val app = App(
-                    appInfo.loadLabel(packageManager).toString(),
-                    appInfo.activityInfo.packageName,
-                    appInfo.activityInfo.loadIcon(packageManager),
+                    name = appInfo.loadLabel(packageManager).toString(),
+                    packageName = appInfo.activityInfo.packageName,
+                    bitmap = bitmap,
                 )
                 userAppList.add(app)
             }
         }
 
-        _apps.value = userAppList
+        apps = flowOf(PagingData.from(userAppList.sortedBy { it.name.lowercase() }))
+        filteredAppList = apps
     }
 
 }

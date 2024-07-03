@@ -13,9 +13,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -25,18 +22,16 @@ import com.coleblvck.shelf.ui.theme.colorWithAlpha
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Flow(modifier: Modifier) {
+fun Flow() {
     val pagerState = rememberPagerState(
         pageCount = { 3 }
     )
-    Box(modifier = modifier) {
+    Box() {
         HorizontalPager(state = pagerState) {
             FlowCards.GreetingCard()
         }
     }
 }
-
-var hideSystemUI by mutableStateOf(true)
 
 class FlowCards {
 
@@ -50,10 +45,10 @@ class FlowCards {
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp),
                 colors = CardDefaults.cardColors(
-                    colorWithAlpha(MaterialTheme.colorScheme.tertiary),
-                    MaterialTheme.colorScheme.onTertiary,
-                    MaterialTheme.colorScheme.tertiary,
-                    MaterialTheme.colorScheme.onTertiary
+                    colorWithAlpha(MaterialTheme.colorScheme.background),
+                    MaterialTheme.colorScheme.onBackground,
+                    MaterialTheme.colorScheme.background,
+                    MaterialTheme.colorScheme.onBackground
                 ),
             ) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

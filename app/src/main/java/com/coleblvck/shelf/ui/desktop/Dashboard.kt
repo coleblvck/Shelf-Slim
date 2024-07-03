@@ -8,34 +8,34 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowUp
-import androidx.compose.material.icons.rounded.List
-import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.coleblvck.shelf.ui.remixIcons.RemixIcon
+import com.coleblvck.shelf.ui.remixIcons.remixicon.Health
+import com.coleblvck.shelf.ui.remixIcons.remixicon.System
+import com.coleblvck.shelf.ui.remixIcons.remixicon.health.`Pulse-fill`
+import com.coleblvck.shelf.ui.remixIcons.remixicon.system.`Apps-2-fill`
+import com.coleblvck.shelf.ui.remixIcons.remixicon.system.`Dashboard-fill`
+import com.coleblvck.shelf.ui.remixIcons.remixicon.system.`Eye-2-fill`
 import com.coleblvck.shelf.ui.theme.colorWithAlpha
 import com.coleblvck.shelf.utils.Utils
 import kotlinx.coroutines.launch
@@ -56,22 +56,20 @@ fun Dashboard(pagesPagerState: PagerState, flowVisibilityToggle: () -> Unit, vis
     }
 
     if (visible) {
-        Card(
+        ElevatedCard(
             modifier = Modifier
-                .height(48.dp)
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp),
+            elevation = CardDefaults.elevatedCardElevation(defaultElevation = 1.dp),
             colors = CardDefaults.cardColors(
-                colorWithAlpha(MaterialTheme.colorScheme.primary),
-                MaterialTheme.colorScheme.onPrimary,
-                MaterialTheme.colorScheme.primary,
-                MaterialTheme.colorScheme.onPrimary
+                containerColor = colorWithAlpha(MaterialTheme.colorScheme.primary).compositeOver(MaterialTheme.colorScheme.primary),
+                contentColor = MaterialTheme.colorScheme.onPrimary,
             )
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                    .padding(all = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -80,60 +78,45 @@ fun Dashboard(pagesPagerState: PagerState, flowVisibilityToggle: () -> Unit, vis
                         color = MaterialTheme.colorScheme.onTertiary,
                     )
                 }
-                IconButton(onClick = {
-                    hideSystemUI = !hideSystemUI
-                }) {
-                    Icon(
-                        modifier = Modifier.size(32.dp),
-                        imageVector = (
-                                if (hideSystemUI) {
-                                    Icons.Rounded.KeyboardArrowDown
-                                } else {
-                                    Icons.Rounded.KeyboardArrowUp
-                                }
-                                ),
-                        contentDescription = (
-                                if (hideSystemUI) {
-                                    "Show system UI"
-                                } else {
-                                    "Hide system UI"
-                                }
-                                )
-                    )
-
-                }
-                IconButton(
-                    onClick = flowVisibilityToggle
-                ) {
-                    Icon(
-                        Icons.Rounded.List,
-                        "Show Top Cards",
-                        modifier = Modifier.size(32.dp),
-                    )
-                }
-                IconButton(onClick = {
-                    Utils.launchApp(context = context, packageName = "com.coleblvck.antiiq")
-                }) {
-                    Icon(
-                        Icons.Rounded.PlayArrow,
-                        "Show Apps",
-                        modifier = Modifier.size(32.dp),
-                    )
-                }
-                IconButton(onClick = { leadButtonClickAction() }) {
-                    Icon(
-                        if (pagesPagerState.currentPage == 1) {
-                            Icons.Rounded.Menu
-                        } else {
-                            Icons.Rounded.Home
+                HorizontalSpacer()
+                Icon(
+                    RemixIcon.System.`Eye-2-fill`,
+                    "Show Top Cards",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable(onClick = flowVisibilityToggle),
+                )
+                HorizontalSpacer()
+                Icon(
+                    RemixIcon.Health.`Pulse-fill`,
+                    "Launch ***",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable {
+                            Utils.launchApp(context = context, packageName = "com.coleblvck.antiiq")
                         },
-                        "Show Apps",
-                        modifier = Modifier.size(28.dp),
-                    )
-                }
+                )
+                HorizontalSpacer()
+                Icon(
+                    if (pagesPagerState.currentPage == 1) {
+                        RemixIcon.System.`Apps-2-fill`
+                    } else {
+                        RemixIcon.System.`Dashboard-fill`
+                    },
+                    "Show Apps",
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clickable { leadButtonClickAction() },
+                )
+
             }
         }
     }
+}
+
+@Composable
+fun HorizontalSpacer(modifier: Modifier = Modifier) {
+    Spacer(modifier = modifier.width(8.dp))
 }
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -142,7 +125,7 @@ fun DashboardClock(color: Color) {
     val context = LocalContext.current
     ElevatedCard(
         colors = CardDefaults.cardColors(
-            colorWithAlpha(MaterialTheme.colorScheme.tertiary),
+            colorWithAlpha(MaterialTheme.colorScheme.tertiary).compositeOver(MaterialTheme.colorScheme.tertiary),
             MaterialTheme.colorScheme.onPrimary,
             MaterialTheme.colorScheme.primary,
             MaterialTheme.colorScheme.onPrimary
@@ -153,13 +136,15 @@ fun DashboardClock(color: Color) {
         AndroidView(
             factory = { context ->
                 TextClock(context).apply {
-                    format12Hour?.let {
-                        this.format24Hour = "hh: mm: ss"
-                    }
+
+                    this.format12Hour = "hh:mm:ss a"
+                    this.format24Hour = "kk:mm:ss"
+
                     timeZone?.let { this.timeZone = it }
                     textSize.let { this.textSize = 24f }
                     fontVariationSettings.let { this.fontVariationSettings = "'wght' 1000" }
                     setTextColor(color.toArgb())
+                    isAllCaps = true
                 }
             },
             modifier = Modifier.padding(horizontal = 8.dp),
