@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.coleblvck.shelf"
+    namespace = "com.coleblvck.shelfSlim"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.coleblvck.shelf"
+        applicationId = "com.coleblvck.shelfSlim"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
