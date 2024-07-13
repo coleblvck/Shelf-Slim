@@ -1,69 +1,95 @@
 package com.coleblvck.shelfSlim
 
-import android.app.Activity
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import com.coleblvck.shelfSlim.content.App
-import com.coleblvck.shelfSlim.ui.ShelfViewModel
-import com.coleblvck.shelfSlim.ui.desktop.Desktop
+import com.coleblvck.shelfSlim.state.ShelfViewModel
+import com.coleblvck.shelfSlim.userInterface.desktop.Desktop
+import com.coleblvck.shelfSlim.userInterface.desktop.hint.HintDialog
+import com.coleblvck.shelfSlim.userInterface.misc.CustomMappingDialog
+import com.coleblvck.shelfSlim.userInterface.widgets.WidgetSelectionSheet
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun ShelfLauncher(shelfViewModel: ShelfViewModel, modifier: Modifier) {
+fun ShelfLauncher(
+    shelfViewModel: ShelfViewModel,
+    modifier: Modifier,
+) {
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setSystemBarsColor(
+        MaterialTheme.colorScheme.background
+    )
+    val isSystemUiVisible = shelfViewModel.desktopUiState.isSystemUiVisible
+    val systemUiVisibilityToggle = shelfViewModel.desktopUiState::toggleSystemUiVisibility
+    systemUiController.isSystemBarsVisible = isSystemUiVisible.value
+    systemUiController.systemBarsBehavior =
+        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 
-    var hideSystemUI = remember {
-        mutableStateOf(true)
-    }
-    val context = LocalContext.current
-    val window = (context as Activity).window
-    val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-    insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-    if (hideSystemUI.value) {
-        insetsController.hide(WindowInsetsCompat.Type.systemBars())
-    } else {
-        insetsController.show(WindowInsetsCompat.Type.systemBars())
+    val isWidgetSelectionSheetVisible = remember {
+        mutableStateOf(false)
     }
 
-    val shelfUiState = shelfViewModel.uiState.collectAsState().value
-    val searchText = remember {
-        mutableStateOf("")
+    val widgetSelectionSheetState = rememberModalBottomSheetState()
+
+    val showWidgetSelectionSheet: () -> Unit = {
+        isWidgetSelectionSheetVisible.value = true
     }
-    val apps: LazyPagingItems<App> =
-        shelfViewModel.filteredAppList.collectAsLazyPagingItems()
-    val pagesPagerState = rememberPagerState(
-        initialPage = 1,
-    ) { 2 }
-    val isFLowVisible = shelfUiState.isFlowVisible
-    val flowVisibilityToggle = shelfViewModel::toggleFlowVisibility
-    val isDashboardVisible = shelfUiState.isDashboardVisible
-    val dashboardVisibilityToggle = shelfViewModel::toggleDashboardVisibility
-    fun searchCallback(): (String) -> Unit = {
-        searchText.value = it
-        shelfViewModel.filterApps(it)
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val configuration = LocalConfiguration.current
+
+    BackHandler {
+        if (shelfViewModel.pagesPagerState.currentPage != 1) {
+            coroutineScope.launch { shelfViewModel.pagesPagerState.animateScrollToPage(1) }
+        } else {
+            if (shelfViewModel.desktopUiState.flow.pagerState.currentPage != 0) {
+                coroutineScope.launch {
+                    shelfViewModel.desktopUiState.flow.pagerState.animateScrollToPage(
+                        0
+                    )
+                }
+            }
+        }
     }
+
     Desktop(
-        apps = apps,
-        dashboardVisibilityToggle = dashboardVisibilityToggle,
-        isDashboardVisible = isDashboardVisible,
-        flowVisibilityToggle = flowVisibilityToggle,
-        isFlowVisible = isFLowVisible,
-        pagesPagerState = pagesPagerState,
-        searchCallback = searchCallback(),
-        searchText = searchText.value,
+        orientation = configuration.orientation,
+        drawerState = shelfViewModel.drawerState,
+        desktopUiState = shelfViewModel.desktopUiState,
+        pagesPagerState = shelfViewModel.pagesPagerState,
+        customFunction = shelfViewModel.customFunction,
+        showWidgetSelectionSheet = showWidgetSelectionSheet
+    )
+
+    CustomMappingDialog(
+        customFunction = shelfViewModel.customFunction,
+        appListState = shelfViewModel.appListState
+    )
+
+    WidgetSelectionSheet(
+        isWidgetSelectionSheetVisible = isWidgetSelectionSheetVisible,
+        onDismiss = { isWidgetSelectionSheetVisible.value = false },
+        sheetState = widgetSelectionSheetState,
+    )
+
+
+    HintDialog(
+        hintState = shelfViewModel.desktopUiState.hint
     )
 }

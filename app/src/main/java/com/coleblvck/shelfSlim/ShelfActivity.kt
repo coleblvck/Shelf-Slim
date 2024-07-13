@@ -3,71 +3,38 @@ package com.coleblvck.shelfSlim
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import com.coleblvck.shelfSlim.ui.ShelfViewModel
-import com.coleblvck.shelfSlim.ui.theme.ShelfTheme
-import com.coleblvck.shelfSlim.utils.DeviceAppsChangedListener
-import com.coleblvck.shelfSlim.utils.DeviceAppsChangedListenerInterface
+import com.coleblvck.shelfSlim.state.ShelfViewModel
+import com.coleblvck.shelfSlim.state.WidgetDataProvider
+import com.coleblvck.shelfSlim.userInterface.theme.ShelfTheme
 
 class ShelfActivity : ComponentActivity() {
+
+    private val shelfViewModel: ShelfViewModel by viewModels()
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge(navigationBarStyle = SystemBarStyle.dark(scrim = Color.Transparent.toArgb()))
-        val shelfViewModel = ShelfViewModel()
-        shelfViewModel.initContext(this)
-        appViewModel = shelfViewModel
-        val appsChangedListener = DeviceAppsChangedListener(UpdateHandler)
-        appsChangedListener.register(this)
-
-
+        shelfViewModel.initialize(this)
         setContent {
             ShelfTheme {
                 Scaffold(
-                    modifier = Modifier.systemBarsPadding(),
-                    containerColor = Color.Transparent
+                    containerColor = Color.Transparent,
                 ) { contentPadding ->
-                    ShelfLauncher(
-                        shelfViewModel = shelfViewModel,
-                        modifier = Modifier.padding(contentPadding)
-                    )
+                    WidgetDataProvider(widgetsState = shelfViewModel.widgetsState) {
+                        ShelfLauncher(
+                            shelfViewModel = shelfViewModel,
+                            modifier = Modifier.padding(contentPadding),
+                        )
+                    }
                 }
             }
         }
     }
-
-
-
-    companion object {
-        lateinit var appViewModel: ShelfViewModel
-
-    }
-
-    object UpdateHandler: DeviceAppsChangedListenerInterface {
-        override fun onPackageInstalled(packageName: String?) {
-            appViewModel.updateShelfApps()
-        }
-
-        override fun onPackageUpdated(packageName: String?) {
-            appViewModel.updateShelfApps()
-        }
-
-        override fun onPackageUninstalled(packageName: String?) {
-            appViewModel.updateShelfApps()
-        }
-
-        override fun onPackageChanged(packageName: String?) {
-            appViewModel.updateShelfApps()
-        }
-    }
 }
-
