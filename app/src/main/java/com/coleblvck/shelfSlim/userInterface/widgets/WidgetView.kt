@@ -205,12 +205,12 @@ fun WidgetView(
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         val sizeF = SizeF(currentWidth.value, currentHeight.value)
                         view.updateAppWidgetSize(
-                            Bundle.EMPTY,
+                            Bundle(),
                             listOf(sizeF, sizeF)
                         )
                     } else {
                         view.updateAppWidgetSize(
-                            Bundle.EMPTY,
+                            Bundle(),
                             currentWidth.value.roundToInt(),
                             currentHeight.value.roundToInt(),
                             currentWidth.value.roundToInt(),
