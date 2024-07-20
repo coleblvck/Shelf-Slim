@@ -4,24 +4,29 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.ViewModelProvider
+import com.coleblvck.shelfSlim.data.Warehouse
+import com.coleblvck.shelfSlim.data.userPreferences.shelfDataStore
 import com.coleblvck.shelfSlim.state.ShelfViewModel
+import com.coleblvck.shelfSlim.state.UserPreferencesViewModel
 import com.coleblvck.shelfSlim.state.WidgetDataProvider
 import com.coleblvck.shelfSlim.userInterface.theme.ShelfTheme
 
 class ShelfActivity : ComponentActivity() {
-
-    private val shelfViewModel: ShelfViewModel by viewModels()
+    private lateinit var shelfViewModel: ShelfViewModel
+    private lateinit var userPreferencesViewModel: UserPreferencesViewModel
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        shelfViewModel.initialize(this)
+        val warehouse = Warehouse(this)
+        shelfViewModel = ViewModelProvider(this, ShelfViewModel.Factory(warehouse, Shelf.get()))[ShelfViewModel::class.java]
+        userPreferencesViewModel = ViewModelProvider(this, UserPreferencesViewModel.Factory(this.shelfDataStore, warehouse))[UserPreferencesViewModel::class.java]
         setContent {
             ShelfTheme {
                 Scaffold(
@@ -29,7 +34,12 @@ class ShelfActivity : ComponentActivity() {
                 ) { contentPadding ->
                     WidgetDataProvider(widgetsState = shelfViewModel.widgetsState) {
                         ShelfLauncher(
-                            shelfViewModel = shelfViewModel,
+                            desktopState = shelfViewModel.desktopState,
+                            flowPagerState = shelfViewModel.flowPagerState,
+                            pagesPagerState = shelfViewModel.pagesPagerState,
+                            userPreferences = userPreferencesViewModel.userPreferences,
+                            userPreferencesToolBox = userPreferencesViewModel.userPreferencesToolBox,
+                            customFunctionToolBox = shelfViewModel.customFunctionToolBox,
                             modifier = Modifier.padding(contentPadding),
                         )
                     }

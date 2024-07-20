@@ -6,12 +6,13 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.coleblvck.shelfSlim.userInterface.desktop.DesktopUiState
+import androidx.lifecycle.LiveData
+import com.coleblvck.shelfSlim.contentManagement.App
+import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.userInterface.desktop.pages.drawer.Drawer
-import com.coleblvck.shelfSlim.userInterface.desktop.pages.drawer.DrawerState
+import com.coleblvck.shelfSlim.userInterface.desktop.pages.drawer.DrawerType
 import com.coleblvck.shelfSlim.userInterface.desktop.pages.gestureBox.GestureBox
 import com.coleblvck.shelfSlim.userInterface.desktop.pages.widgetBox.WidgetBox
 
@@ -20,28 +21,34 @@ import com.coleblvck.shelfSlim.userInterface.desktop.pages.widgetBox.WidgetBox
 @Composable
 fun Pages(
     modifier: Modifier,
-    drawerState: DrawerState,
-    pagerState: PagerState,
-    desktopUiState: DesktopUiState,
+    pagesPagerState: ShelfPagerState,
+    drawerApps: LiveData<List<App>>,
+    drawerType: String,
+    drawerSearchText: String,
+    drawerSearchCallback: (String) -> Unit,
+    dashboardVisibilityToggle: () -> Unit,
     showWidgetSelectionSheet: () -> Unit
 ) {
     val fling = PagerDefaults.flingBehavior(
-        state = pagerState,
+        state = pagesPagerState,
         pagerSnapDistance = PagerSnapDistance.atMost(2)
     )
     HorizontalPager(
-        state = pagerState,
+        state = pagesPagerState,
         flingBehavior = fling,
         modifier = modifier,
         beyondBoundsPageCount = 2,
     ) { page: Int ->
         when (page) {
             0 -> Drawer(
-                drawerState = drawerState
+                drawerApps = drawerApps,
+                drawerType = drawerType,
+                drawerSearchText = drawerSearchText,
+                drawerSearchCallback = drawerSearchCallback,
             )
 
             1 -> GestureBox(
-                desktopUiState = desktopUiState
+                dashboardVisibilityToggle = dashboardVisibilityToggle
             )
 
             2 -> WidgetBox(

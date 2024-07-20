@@ -22,17 +22,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.coleblvck.shelfSlim.userInterface.desktop.flow.FlowState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HeaderEditDialog(
-    flowState: FlowState,
+    flowHeaderHeading: String,
+    updateFlowHeaderHeading: (String) -> Unit,
+    flowHeaderSubHeading: String,
+    updateFlowHeaderSubHeading: (String) -> Unit,
+    flowHeaderEditDialogVisible: Boolean,
+    updateFlowHeaderEditDialogVisibility: (Boolean) -> Unit
 ) {
-    if (flowState.header.editDialogVisible.value) {
+    if (flowHeaderEditDialogVisible) {
         AlertDialog(
             onDismissRequest = {
-                flowState.header.setEditDialogVisibility(false)
+                updateFlowHeaderEditDialogVisibility(false)
             },
             content = {
                 Card(
@@ -63,8 +67,8 @@ fun HeaderEditDialog(
                                 modifier = Modifier
                                     .padding(12.dp)
                                     .fillMaxSize(),
-                                value = flowState.header.heading.value,
-                                onValueChange = { flowState.header.setHeading(it, true) },
+                                value = flowHeaderHeading,
+                                onValueChange = updateFlowHeaderHeading,
                                 visualTransformation = VisualTransformation.None,
                                 singleLine = false,
                                 textStyle = TextStyle(
@@ -92,8 +96,8 @@ fun HeaderEditDialog(
                                 modifier = Modifier
                                     .padding(12.dp)
                                     .fillMaxSize(),
-                                value = flowState.header.subHeading.value,
-                                onValueChange = { flowState.header.setSubHeading(it, true) },
+                                value = flowHeaderSubHeading,
+                                onValueChange = updateFlowHeaderSubHeading,
                                 visualTransformation = VisualTransformation.None,
                                 singleLine = false,
                                 textStyle = TextStyle(

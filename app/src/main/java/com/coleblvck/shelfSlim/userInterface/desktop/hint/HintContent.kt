@@ -1,5 +1,6 @@
 package com.coleblvck.shelfSlim.userInterface.desktop.hint
 
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.RemixIcon
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.Design
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.Logos
@@ -10,26 +11,24 @@ import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Ap
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Dashboard-fill`
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Eye-2-fill`
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Eye-close-fill`
-import com.coleblvck.shelfSlim.state.CustomFunction
-import com.coleblvck.shelfSlim.userInterface.desktop.DesktopUiState
 
 
-class HintContent(desktopUiState: DesktopUiState, private val customFunction: CustomFunction) {
-    private val dashboardState = desktopUiState.dashboard
+val hintContent: (dashPosition: String, dashIsHorizontal: Boolean, currentActionIcon: ImageVector) -> List<List<Any>> = {
+    dashPosition: String, dashIsHorizontal: Boolean, currentActionIcon: ImageVector ->
 
     val dashboardPosition: () -> String = {
-        dashboardState.currentPosition.value.name.lowercase()
+        dashPosition.lowercase()
     }
 
     val dashboardSwipeDirection: () -> String = {
-        if (dashboardState.dashIsHorizontal()) {
+        if (dashIsHorizontal) {
             "left"
         } else {
             "up"
         }
     }
 
-    val list: () -> List<List<Any>> = {
+    val list: List<List<Any>> =
         listOf(
             listOf(
                 "- !NB: Note that added widgets currently won't persist if the app gets killed.",
@@ -37,12 +36,12 @@ class HintContent(desktopUiState: DesktopUiState, private val customFunction: Cu
             ),
             listOf(
                 "- Long Press on ",
-                customFunction.currentIcon.value,
+                currentActionIcon,
                 " to re-map its function. If not visible, swipe ${dashboardSwipeDirection()} on the ${dashboardPosition()} dashboard."
             ),
             listOf(
                 "- Tap on ",
-                customFunction.currentIcon.value,
+                currentActionIcon,
                 " or swipe ${dashboardSwipeDirection()} on the ${dashboardPosition()} dashboard to run custom action.",
                 " Swipe ${dashboardSwipeDirection()} on dashboard to re-map if disabled."
             ),
@@ -70,7 +69,7 @@ class HintContent(desktopUiState: DesktopUiState, private val customFunction: Cu
                 RemixIcon.Logos.`Firefox-fill`,
                 " during any app drawer search for a quick website visit or Google search."
             ),
-            if (dashboardState.dashIsHorizontal()) {
+            if (dashIsHorizontal) {
                 listOf(
                     "- Tap on dashboard clock or swipe down on empty desktop space to expand status bar."
                 )
@@ -79,7 +78,7 @@ class HintContent(desktopUiState: DesktopUiState, private val customFunction: Cu
                     "- Swipe down on empty desktop space to expand status bar."
                 )
             },
-            if (dashboardState.dashIsHorizontal()) {
+            if (dashIsHorizontal) {
                 listOf(
                     "- Long Press on dashboard clock to show/hide system bars."
                 )
@@ -97,5 +96,6 @@ class HintContent(desktopUiState: DesktopUiState, private val customFunction: Cu
                 "- Double Tap on empty desktop space to show/hide ${dashboardPosition()} dashboard."
             ),
         )
-    }
+
+    list
 }

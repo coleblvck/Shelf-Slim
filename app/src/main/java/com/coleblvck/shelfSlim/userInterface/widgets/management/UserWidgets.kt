@@ -20,10 +20,10 @@ class UserWidgetsState {
 }
 
 class AppWidgetData(
+    val appWidgetId: Int,
+    val providerInfo: AppWidgetProviderInfo,
     val appName: String,
     val widgetLabel: String,
-    val providerInfo: AppWidgetProviderInfo,
-    val appWidgetId: Int,
     val icon: Drawable? = null,
     val previewImage: Drawable? = null,
     val isPreview: Boolean

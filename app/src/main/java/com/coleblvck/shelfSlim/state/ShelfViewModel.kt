@@ -1,94 +1,113 @@
 package com.coleblvck.shelfSlim.state
 
-import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.coleblvck.shelfSlim.ShelfActivity
-import com.coleblvck.shelfSlim.userInterface.desktop.DesktopUiState
-import com.coleblvck.shelfSlim.userInterface.desktop.pages.drawer.DrawerState
+import androidx.lifecycle.viewmodel.CreationExtras
+import com.coleblvck.shelfSlim.Shelf
+import com.coleblvck.shelfSlim.data.Warehouse
+import com.coleblvck.shelfSlim.data.entities.widget.Widget
+import com.coleblvck.shelfSlim.userInterface.desktop.DesktopState
+import com.coleblvck.shelfSlim.userInterface.widgets.management.AppWidgetData
+import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.widgetTool.WidgetTool
+import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.widgetTool.widgetHost
+import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.widgetTool.widgetManager
 import com.coleblvck.shelfSlim.userInterface.widgets.state.WidgetsState
-import com.coleblvck.shelfSlim.utils.PackageChangeListener
-import com.coleblvck.shelfSlim.utils.PackageUpdateHandler
 import kotlinx.coroutines.launch
 
 const val maximumWidgetAmount: Int = 4
 
-class ShelfViewModel : ViewModel() {
+class ShelfViewModel(
+    private val warehouse: Warehouse,
+    private val shelf: Shelf
+) : ViewModel() {
 
+    private val utilityToolBox = warehouse.utilityToolBox
 
-    private val contextLiveData = MutableLiveData<Context>()
+    val desktopState = DesktopState(utilityToolBox.packageManager)
 
-    fun setContext(context: Context) {
-        contextLiveData.value = context
-    }
+    val customFunctionToolBox = CustomFunctionToolBox()
 
-    private val isInitialized = mutableStateOf(false)
-
-    private val _preferenceStore: PreferenceStore = PreferenceStore()
-    val preferenceStore get() = _preferenceStore
-
-    private val _appListState = AppListState(this)
-    val appListState get() = _appListState
-
-    private val _customFunction =
-        CustomFunction(preferenceStore = preferenceStore, appListState = appListState)
-    val customFunction get() = _customFunction
-
-    private val _desktopUiState = DesktopUiState(_preferenceStore, customFunction)
-    val desktopUiState get() = _desktopUiState
-
-    private val _drawerState = DrawerState(this)
-    val drawerState get() = _drawerState
-
-
-    private val _widgetsState = WidgetsState()
-    val widgetsState get() = _widgetsState
+    val widgetsState = WidgetsState(warehouse.repositories.widgets)
 
     @OptIn(ExperimentalFoundationApi::class)
     val pagesPagerState = ShelfPagerState(pageCount = 3, initialPage = 1)
 
-    private val packageChangeListener = PackageChangeListener(PackageUpdateHandler(this))
+    @OptIn(ExperimentalFoundationApi::class)
+    val flowPagerState = ShelfPagerState(pageCount = 2, initialPage = 0)
 
 
-    fun updateShelfContent() {
+
+
+    val updateShelfContent: () -> Unit = {
         viewModelScope.launch {
-            appListState.fetch()
+            desktopState.appListToolBox.fetch()
         }
     }
 
-    private fun initPreferences() {
-        viewModelScope.launch {
-            _desktopUiState.flow.preferences.initialize()
-            _desktopUiState.dashboard.preferences.initialize()
-            _customFunction.initialize()
-            _drawerState.initPreferences()
-        }
+
+    val widgetTool = WidgetTool(
+        host = shelf.widgetHost,
+        manager = shelf.widgetManager
+    )
+
+    val widgets = warehouse.repositories.widgets.getWidgets()
+    private val initialWidgetsObserver: Observer<List<Widget>> = Observer {
+        list ->
+            getInitialWidgets(list)
     }
 
-    private fun initContextLiveData(activity: ShelfActivity) {
-        viewModelScope.launch {
-            setContext(activity)
-            _appListState.setContext(activity)
+    private fun getInitialWidgets(widgetList: List<Widget>) {
+        for (widget in widgetList) {
+            val providerInfo = widgetTool.manager.getAppWidgetInfo(widget.id)
+            val appInfo = warehouse.utilityToolBox.packageManager.getApplicationInfo(providerInfo.provider.packageName, 0)
+            val appWidgetData = AppWidgetData(
+                appWidgetId = widget.id,
+                providerInfo = providerInfo,
+                widgetLabel = providerInfo.loadLabel(warehouse.utilityToolBox.packageManager),
+                appName = warehouse.utilityToolBox.packageManager.getApplicationLabel(appInfo).toString(),
+                icon = widgetTool.getWidgetIcon(shelf.applicationContext, providerInfo, 1),
+                isPreview = false
+            )
+            widgetsState.helper.addUserWidget(appWidgetData)
         }
+        widgets.removeObserver(initialWidgetsObserver)
     }
 
-    fun initialize(activity: ShelfActivity) {
+    private fun initUserWidgets() {
+        widgets.observeForever(initialWidgetsObserver)
+    }
+
+
+    private val listeners: Listeners = Listeners(updateShelfContent)
+
+    init {
         viewModelScope.launch {
-            if (!isInitialized.value) {
-                _preferenceStore.initialize(activity)
-                initContextLiveData(activity)
-                updateShelfContent()
-                packageChangeListener.register(activity.applicationContext)
-                initPreferences()
-                isInitialized.value = true
-            } else {
-                _appListState.setContext(activity)
+            updateShelfContent()
+        }
+        listeners.register(shelf)
+        initUserWidgets()
+    }
+
+    companion object {
+        val Factory: (warehouse: Warehouse, shelf: Shelf) -> ViewModelProvider.Factory =
+            { warehouse: Warehouse, shelf: Shelf ->
+                object : ViewModelProvider.Factory {
+                    @Suppress("UNCHECKED_CAST")
+                    override fun <T : ViewModel> create(
+                        modelClass: Class<T>,
+                        extras: CreationExtras
+                    ): T {
+                        return ShelfViewModel(
+                            warehouse = warehouse,
+                            shelf = shelf
+                        ) as T
+                    }
+                }
             }
-        }
     }
 }
 

@@ -12,36 +12,51 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.userInterface.desktop.flow.flowHeader.FlowHeader
 import com.coleblvck.shelfSlim.userInterface.desktop.flow.flowNote.FlowNote
-import com.coleblvck.shelfSlim.userInterface.desktop.hint.HintState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Flow(
     modifier: Modifier = Modifier,
-    flowState: FlowState,
-    hintState: HintState,
+    isFlowVisible: Boolean,
+    flowPagerState: ShelfPagerState,
+    flowHeaderHeading: String,
+    updateFlowHeaderHeading: (String) -> Unit,
+    flowHeaderSubHeading: String,
+    updateFlowHeaderSubHeading: (String) -> Unit,
+    flowHeaderEditDialogVisible: Boolean,
+    updateFlowHeaderEditDialogVisibility: (Boolean) -> Unit,
+    flowNoteText: String,
+    updateFlowNoteText: (String) -> Unit,
+    updateHintVisibility: (Boolean) -> Unit,
 ) {
     AnimatedVisibility(
-        visible = flowState.isVisible.value,
+        visible = isFlowVisible,
         modifier = modifier,
         enter = slideInHorizontally() + expandHorizontally() + fadeIn(),
         exit = slideOutHorizontally() + shrinkHorizontally() + fadeOut()
     ) {
         Box {
             HorizontalPager(
-                state = flowState.pagerState,
+                state = flowPagerState,
                 beyondBoundsPageCount = 1,
             ) { page ->
                 when (page) {
                     0 -> FlowHeader(
-                        flowState = flowState,
-                        hintState = hintState
+                        flowHeaderHeading = flowHeaderHeading,
+                        updateFlowHeaderHeading = updateFlowHeaderHeading,
+                        flowHeaderSubHeading = flowHeaderSubHeading,
+                        updateFlowHeaderSubHeading = updateFlowHeaderSubHeading,
+                        flowHeaderEditDialogVisible = flowHeaderEditDialogVisible,
+                        updateFlowHeaderEditDialogVisibility = updateFlowHeaderEditDialogVisibility,
+                        updateHintVisibility = updateHintVisibility
                     )
 
                     1 -> FlowNote(
-                        note = flowState.note
+                        flowNoteText = flowNoteText,
+                        updateFlowNoteText = updateFlowNoteText
                     )
                 }
             }

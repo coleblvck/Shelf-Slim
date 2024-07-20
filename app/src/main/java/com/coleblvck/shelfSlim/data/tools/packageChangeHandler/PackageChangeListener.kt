@@ -1,10 +1,9 @@
-package com.coleblvck.shelfSlim.utils
+package com.coleblvck.shelfSlim.data.tools.packageChangeHandler
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-
 
 
 class PackageChangeListener(private val callback: PackageChangeListenerInterface) {

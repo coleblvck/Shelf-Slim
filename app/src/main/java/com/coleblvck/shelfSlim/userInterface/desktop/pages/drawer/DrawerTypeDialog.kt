@@ -11,7 +11,8 @@ import com.coleblvck.shelfSlim.userInterface.common.cards.DialogColumnCard
 @Composable
 fun DrawerTypeDialog(
     onDismiss: () -> Unit,
-    drawerState: DrawerState,
+    currentDrawerType: String,
+    updateDrawerType: (String) -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -21,10 +22,10 @@ fun DrawerTypeDialog(
             ) {
                 for (drawerType in DrawerType.entries) {
                     DialogButtonCard(
-                        selectionColorCondition = drawerState.drawerType.value == drawerType,
+                        selectionColorCondition = getDrawerType(currentDrawerType) == drawerType,
                         text = drawerType.name
                     ) {
-                        drawerState.setDrawerType(drawerType.name, true)
+                        updateDrawerType(drawerType.name)
                     }
                 }
             }

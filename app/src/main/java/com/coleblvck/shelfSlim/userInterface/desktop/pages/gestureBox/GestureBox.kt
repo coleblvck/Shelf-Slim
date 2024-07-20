@@ -15,14 +15,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.coleblvck.shelfSlim.userInterface.desktop.DesktopUiState
 import com.coleblvck.shelfSlim.utils.Utils
 
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun GestureBox(
-    desktopUiState: DesktopUiState,
+    dashboardVisibilityToggle: () -> Unit
 ) {
     val context = LocalContext.current
     Card(
@@ -38,9 +37,7 @@ fun GestureBox(
                 )
             }
             .pointerInput(Unit) {
-                detectTapGestures(onDoubleTap = {
-                    desktopUiState.dashboard.toggleVisibility(true)
-                })
+                detectTapGestures(onDoubleTap = {dashboardVisibilityToggle()})
             }
             .fillMaxSize()
             .padding(horizontal = 12.dp),

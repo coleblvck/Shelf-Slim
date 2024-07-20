@@ -10,7 +10,8 @@ import com.coleblvck.shelfSlim.userInterface.common.cards.DialogColumnCard
 @Composable
 fun DashboardPositionSetDialog(
     onDismiss: () -> Unit,
-    dashboardState: DashboardState,
+    currentDashboardPosition: String,
+    updateDashboardPosition: (String) -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -20,10 +21,10 @@ fun DashboardPositionSetDialog(
             ) {
                 for (positionType in DashboardPosition.entries) {
                     DialogButtonCard(
-                        selectionColorCondition = dashboardState.currentPosition.value == positionType,
+                        selectionColorCondition = getDashboardPosition(currentDashboardPosition) == positionType,
                         text = positionType.name
                     ) {
-                        dashboardState.changePosition(positionType.name)
+                        updateDashboardPosition(positionType.name)
                     }
                 }
             }

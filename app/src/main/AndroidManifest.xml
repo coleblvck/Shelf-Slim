@@ -10,6 +10,7 @@
 
 
     <application
+        android:name=".Shelf"
         android:allowBackup="true"
         android:launchMode="singleTask"
         android:dataExtractionRules="@xml/data_extraction_rules"

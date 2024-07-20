@@ -18,8 +18,8 @@ const val APPWIDGET_BIND_REQUEST_CODE = 12415
 const val APPWIDGET_CONFIGURE_REQUEST_CODE = 56304
 
 
-val Context.widgetHost: AppWidgetHost get() = AppWidgetHost(this, APP_WIDGET_HOST_ID)
-val Context.widgetManager: AppWidgetManager get() = AppWidgetManager.getInstance(this)
+val Context.widgetHost: AppWidgetHost get() = AppWidgetHost(this.applicationContext, APP_WIDGET_HOST_ID)
+val Context.widgetManager: AppWidgetManager get() = AppWidgetManager.getInstance(this.applicationContext)
 
 
 class WidgetTool(val host: AppWidgetHost, val manager: AppWidgetManager) {

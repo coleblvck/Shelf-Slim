@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -15,14 +16,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.itemKey
 import com.coleblvck.shelfSlim.contentManagement.App
 import com.coleblvck.shelfSlim.userInterface.theme.colorWithAlpha
 
 @Composable
 fun Grid(
-    apps: LazyPagingItems<App>,
+    apps: List<App>,
     state: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
     contentPadding: PaddingValues = PaddingValues(12.dp)
 ) {
@@ -47,19 +46,17 @@ fun Grid(
             verticalItemSpacing = 4.dp,
             flingBehavior = ScrollableDefaults.flingBehavior(),
         ) {
-            items(
-                count = apps.itemCount,
-                contentType = { "App" },
-                key = apps.itemKey { it.packageName },
-                itemContent = { index ->
-                    apps[index]?.let {
-                        DrawerAppItem(
-                            app = it,
-                            appCardType = AppCardType.BOX
-                        )
-                    }
-                }
-            )
+            itemsIndexed(
+                items = apps,
+                key = { index, app -> "$index - ${app.packageName}" },
+                contentType = { _, _ -> "App" }
+            ) { _, app ->
+                DrawerAppItem(
+                    app = app,
+                    appCardType = AppCardType.BOX
+                )
+
+            }
 
         }
     }

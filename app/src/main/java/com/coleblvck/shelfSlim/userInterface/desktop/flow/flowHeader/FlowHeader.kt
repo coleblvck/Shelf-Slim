@@ -17,26 +17,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.coleblvck.shelfSlim.userInterface.desktop.flow.FlowState
-import com.coleblvck.shelfSlim.userInterface.desktop.hint.HintState
 import com.coleblvck.shelfSlim.userInterface.theme.colorWithAlpha
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FlowHeader(
-    flowState: FlowState,
-    hintState: HintState,
+    flowHeaderHeading: String,
+    updateFlowHeaderHeading: (String) -> Unit,
+    flowHeaderSubHeading: String,
+    updateFlowHeaderSubHeading: (String) -> Unit,
+    flowHeaderEditDialogVisible: Boolean,
+    updateFlowHeaderEditDialogVisibility: (Boolean) -> Unit,
+    updateHintVisibility: (Boolean) -> Unit,
 ) {
-    HeaderEditDialog(flowState = flowState)
+    HeaderEditDialog(
+        flowHeaderHeading = flowHeaderHeading,
+        updateFlowHeaderHeading = updateFlowHeaderHeading,
+        flowHeaderSubHeading = flowHeaderSubHeading,
+        updateFlowHeaderSubHeading = updateFlowHeaderSubHeading,
+        flowHeaderEditDialogVisible = flowHeaderEditDialogVisible,
+        updateFlowHeaderEditDialogVisibility = updateFlowHeaderEditDialogVisibility
+    )
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp)
             .combinedClickable(
                 onClick = {},
-                onDoubleClick = { hintState.isVisible.value = true },
-                onLongClick = { flowState.header.setEditDialogVisibility(true) },
+                onDoubleClick = { updateHintVisibility(true) },
+                onLongClick = { updateFlowHeaderEditDialogVisibility(true) },
             ),
         colors = CardDefaults.cardColors(
             colorWithAlpha(MaterialTheme.colorScheme.background),
@@ -51,16 +61,16 @@ fun FlowHeader(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (flowState.header.heading.value != "") {
+                if (flowHeaderHeading != "") {
                     Text(
-                        text = flowState.header.heading.value,
+                        text = flowHeaderHeading,
                         fontSize = 60.sp,
                         fontWeight = FontWeight.W900
                     )
                 }
-                if (flowState.header.subHeading.value != "") {
+                if (flowHeaderSubHeading != "") {
                     Text(
-                        text = flowState.header.subHeading.value,
+                        text = flowHeaderSubHeading,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.W500
                     )

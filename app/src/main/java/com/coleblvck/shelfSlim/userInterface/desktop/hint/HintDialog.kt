@@ -11,15 +11,17 @@ import com.coleblvck.shelfSlim.userInterface.common.cards.DialogColumnCard
 
 @Composable
 fun HintDialog(
-    hintState: HintState,
+    isHintVisible: Boolean,
+    updateHintVisibility: (Boolean) -> Unit,
+    hintContent: List<List<Any>>
 ) {
-    if (hintState.isVisible.value) {
-        Dialog(onDismissRequest = { hintState.isVisible.value = false }) {
+    if (isHintVisible) {
+        Dialog(onDismissRequest = { updateHintVisibility(false) }) {
             DialogColumnCard(
                 headingText = "Hints/Updates",
                 modifier = Modifier.verticalScroll(state = rememberScrollState())
             ) {
-                for (inlineList: List<Any> in hintState.content.list()) {
+                for (inlineList: List<Any> in hintContent) {
                     if (inlineList.isNotEmpty())
                         SpanText(list = inlineList)
                 }

@@ -26,7 +26,8 @@ import com.coleblvck.shelfSlim.userInterface.theme.colorWithAlpha
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlowNote(
-    note: FlowNoteState
+    flowNoteText: String,
+    updateFlowNoteText: (String) -> Unit,
 ) {
 
     val enabled by remember {
@@ -51,8 +52,8 @@ fun FlowNote(
             modifier = Modifier
                 .padding(12.dp)
                 .fillMaxSize(),
-            value = note.text.value,
-            onValueChange = {note.setText(it, true)},
+            value = flowNoteText,
+            onValueChange = updateFlowNoteText,
             visualTransformation = VisualTransformation.None,
             interactionSource = interactionSource,
             enabled = enabled,
@@ -65,7 +66,7 @@ fun FlowNote(
         ) {
                 innerTextField ->
             OutlinedTextFieldDefaults.DecorationBox(
-                value = note.text.value,
+                value = flowNoteText,
                 innerTextField = innerTextField,
                 enabled = enabled,
                 singleLine = singleLine,

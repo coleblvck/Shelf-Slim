@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -30,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -43,12 +43,12 @@ import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Da
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Eye-2-fill`
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Eye-close-fill`
 import com.coleblvck.shelfSlim.state.ActionType
-import com.coleblvck.shelfSlim.state.CustomFunction
+import com.coleblvck.shelfSlim.state.CustomFunctionToolBox
+import com.coleblvck.shelfSlim.state.ShelfPagerState
+import com.coleblvck.shelfSlim.state.getActionTypeValue
 import com.coleblvck.shelfSlim.userInterface.common.ActionIcon
 import com.coleblvck.shelfSlim.userInterface.common.HorizontalSpacer
 import com.coleblvck.shelfSlim.userInterface.common.VerticalSpacer
-import com.coleblvck.shelfSlim.userInterface.desktop.DesktopUiState
-import com.coleblvck.shelfSlim.userInterface.desktop.pages.drawer.DrawerState
 import com.coleblvck.shelfSlim.userInterface.desktop.pages.drawer.DrawerTypeDialog
 import com.coleblvck.shelfSlim.userInterface.theme.colorWithAlpha
 import com.coleblvck.shelfSlim.utils.Utils
@@ -59,12 +59,22 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Dashboard(
-    drawerState: DrawerState,
-    desktopUiState: DesktopUiState,
-    pagesPagerState: PagerState,
-    customFunction: CustomFunction,
+    pagesPagerState: ShelfPagerState,
+    dashIsHorizontal: Boolean,
+    flowAnimateToNote: () -> Unit,
+    systemUiVisibilityToggle: () -> Unit,
+    isFlowVisible: Boolean,
+    flowVisibilityToggle: () -> Unit,
+    isDashboardVisible: Boolean,
+    customFunctionAction: String,
+    customFunctionIcon: ImageVector,
+    customFunctionParameter: String,
+    customFunctionToolBox: CustomFunctionToolBox,
+    currentDrawerType: String,
+    updateDrawerType: (String) -> Unit,
+    currentDashboardPosition: String,
+    updateDashboardPosition: (String) -> Unit
 ) {
-    val dashIsHorizontal = desktopUiState.dashboard.dashIsHorizontal
     val showDrawerTypeDialog = remember {
         mutableStateOf(false)
     }
@@ -81,20 +91,19 @@ fun Dashboard(
         }
     }
 
-    fun animateToNote() {
-        coroutineScope.launch {
-            desktopUiState.flow.animateDirectlyToNote()
-        }
-    }
-
     val dashModifier: () -> Modifier = {
-        if (dashIsHorizontal()) {
+        if (dashIsHorizontal) {
             Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp)
                 .pointerInput(Unit) {
                     detectHorizontalDragGestures { _, dragAmount ->
-                        if (dragAmount < -50) customFunction.execute(context)
+                        if (dragAmount < -50)
+                            customFunctionToolBox.executeAction(
+                                getActionTypeValue(customFunctionAction),
+                                context,
+                                customFunctionParameter
+                            )
                     }
                 }
         } else {
@@ -104,14 +113,19 @@ fun Dashboard(
                 .padding(vertical = 12.dp)
                 .pointerInput(Unit) {
                     detectVerticalDragGestures { _, dragAmount ->
-                        if (dragAmount < -50) customFunction.execute(context)
+                        if (dragAmount < -50)
+                            customFunctionToolBox.executeAction(
+                                getActionTypeValue(customFunctionAction),
+                                context,
+                                customFunctionParameter
+                            )
                     }
                 }
         }
     }
 
     val getSpacer: @Composable () -> Unit = {
-        if (dashIsHorizontal()) {
+        if (dashIsHorizontal) {
             HorizontalSpacer()
         } else {
             VerticalSpacer()
@@ -120,11 +134,11 @@ fun Dashboard(
 
     val dashContent: @Composable (firstChildModifier: Modifier) -> Unit =
         { firstChildModifier: Modifier ->
-            if (dashIsHorizontal()) {
+            if (dashIsHorizontal) {
                 Box(modifier = firstChildModifier) {
                     DashboardClock(
                         color = MaterialTheme.colorScheme.onTertiary,
-                        systemUiVisibilityToggle = desktopUiState.toggleSystemUiVisibility,
+                        systemUiVisibilityToggle = systemUiVisibilityToggle,
                     )
                 }
             } else {
@@ -135,28 +149,32 @@ fun Dashboard(
 
             ActionIcon(
                 vector = RemixIcon.Design.`Quill-pen-fill`,
-                action = { animateToNote() })
+                action = { flowAnimateToNote() })
 
             getSpacer()
 
             ActionIcon(
-                vector = if (desktopUiState.flow.isVisible.value) {
+                vector = if (isFlowVisible) {
                     RemixIcon.System.`Eye-2-fill`
                 } else {
                     RemixIcon.System.`Eye-close-fill`
                 },
-                action = { desktopUiState.flow.toggleVisibility(true) }
+                action = { flowVisibilityToggle() }
             )
 
-            if (customFunction.currentAction.value != ActionType.None) {
+            if (getActionTypeValue(customFunctionAction) != ActionType.NONE) {
                 getSpacer()
                 ActionIcon(
-                    vector = customFunction.currentIcon.value,
+                    vector = customFunctionIcon,
                     action = {
-                        customFunction.execute(context)
+                        customFunctionToolBox.executeAction(
+                            getActionTypeValue(customFunctionAction),
+                            context,
+                            customFunctionParameter
+                        )
                     },
                     longPressAction = {
-                        customFunction.setMappingDialogVisibility(true)
+                        customFunctionToolBox.setMappingDialogVisibility(true)
                     }
                 )
             }
@@ -178,7 +196,8 @@ fun Dashboard(
                 onDismiss = {
                     showDrawerTypeDialog.value = false
                 },
-                drawerState = drawerState,
+                currentDrawerType = currentDrawerType,
+                updateDrawerType = updateDrawerType,
             )
         }
     }
@@ -186,10 +205,11 @@ fun Dashboard(
     if (positionSetDialogVisible.value) {
         DashboardPositionSetDialog(
             onDismiss = { positionSetDialogVisible.value = false },
-            dashboardState = desktopUiState.dashboard
+            currentDashboardPosition = currentDashboardPosition,
+            updateDashboardPosition = updateDashboardPosition,
         )
     }
-    if (desktopUiState.dashboard.isVisible.value) {
+    if (isDashboardVisible) {
         ElevatedCard(
             modifier = dashModifier().pointerInput(Unit) {
                 detectTapGestures(onDoubleTap = { positionSetDialogVisible.value = true })
@@ -202,7 +222,7 @@ fun Dashboard(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             )
         ) {
-            if (dashIsHorizontal()) {
+            if (dashIsHorizontal) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
