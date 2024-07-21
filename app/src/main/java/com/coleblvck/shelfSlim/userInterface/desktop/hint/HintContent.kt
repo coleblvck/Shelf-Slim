@@ -18,10 +18,6 @@ fun hintContent(dashboardPosition: String, dashIsHorizontal: Boolean, dashboardS
     val list: List<List<Any>> =
         listOf(
             listOf(
-                "- !NB: Note that added widgets currently won't persist if the app gets killed.",
-                " There's also a current limit of four(4) widgets, due to an issue with widgets that have scrolling elements, might fix soon."
-            ),
-            listOf(
                 "- Long Press on ",
                 currentActionIcon,
                 " to re-map its function. If not visible, swipe $dashboardSwipeDirection on the $dashboardPosition dashboard."
