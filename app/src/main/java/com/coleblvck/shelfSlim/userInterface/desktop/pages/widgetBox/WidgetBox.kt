@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,12 +14,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -31,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.RemixIcon
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.Design
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.design.`Edit-2-fill`
-import com.coleblvck.shelfSlim.state.LocalWidgetData
+import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
 import com.coleblvck.shelfSlim.userInterface.common.DisplayIcon
 import com.coleblvck.shelfSlim.userInterface.common.HorizontalSpacer
 import com.coleblvck.shelfSlim.userInterface.theme.colorWithAlpha
@@ -42,10 +45,9 @@ import com.coleblvck.shelfSlim.userInterface.widgets.management.AppWidgetData
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun WidgetBox(
+    widgetToolBox: WidgetToolBox,
     showWidgetSelectionSheet: () -> Unit
 ) {
-    val widgetData = LocalWidgetData.current
-    val widgetsState = widgetData.widgetsState
     Card(
         modifier = Modifier
             .fillMaxSize()
@@ -61,23 +63,28 @@ fun WidgetBox(
                 .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            if (widgetsState.userWidgets.widgets.value.isNotEmpty()) {
+            if (widgetToolBox.userWidgets.value.isNotEmpty()) {
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(0.dp),
+                        .padding(0.dp)
+                        .verticalScroll(
+                            enabled = widgetToolBox.widgetPageScrollEnabled.value,
+                            state = widgetToolBox.widgetPageScrollState
+                        ),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    widgetsState.userWidgets.widgets.value.forEach { appWidgetData: AppWidgetData ->
-                        key (appWidgetData.appWidgetId) {
+                    widgetToolBox.userWidgets.value.forEach { appWidgetData: AppWidgetData ->
+                        key(appWidgetData.appWidgetId) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .weight(appWidgetData.verticalWeight.value),
+                                    .aspectRatio(appWidgetData.verticalWeight),
                             ) {
                                 WidgetView(
                                     modifier = Modifier
                                         .fillMaxSize(),
+                                    widgetToolBox = widgetToolBox,
                                     appWidgetData = appWidgetData,
                                 )
                             }
@@ -107,33 +114,47 @@ fun WidgetBox(
                     )
                 }
             }
-
-            ElevatedButton(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = showWidgetSelectionSheet,
-                shape = RoundedCornerShape(corner = CornerSize(8.dp)),
-                colors = ButtonDefaults.elevatedButtonColors(
-                    MaterialTheme.colorScheme.background,
-                    MaterialTheme.colorScheme.onBackground
-                )
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                ElevatedButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = showWidgetSelectionSheet,
+                    shape = RoundedCornerShape(corner = CornerSize(8.dp)),
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.colorScheme.onBackground
+                    )
                 ) {
-                    DisplayIcon(
-                        modifier = Modifier.size(24.dp),
-                        vector = RemixIcon.Design.`Edit-2-fill`
-                    )
-                    HorizontalSpacer()
-                    Text(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight(800),
-                        text = "Manage"
-                    )
-                }
 
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        DisplayIcon(
+                            modifier = Modifier.size(24.dp),
+                            vector = RemixIcon.Design.`Edit-2-fill`
+                        )
+                        HorizontalSpacer()
+                        Text(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight(800),
+                            text = "Manage"
+                        )
+                    }
+
+                }
+                Text(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight(800),
+                    text = "Scroll:"
+                )
+                Switch(
+                    checked = widgetToolBox.widgetPageScrollEnabled.value,
+                    onCheckedChange = widgetToolBox::widgetPageScrollSwitch
+                )
             }
         }
     }

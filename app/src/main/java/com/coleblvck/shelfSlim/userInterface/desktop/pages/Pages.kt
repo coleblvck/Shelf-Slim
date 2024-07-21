@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import com.coleblvck.shelfSlim.contentManagement.App
+import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
 import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.userInterface.desktop.pages.drawer.Drawer
 import com.coleblvck.shelfSlim.userInterface.desktop.pages.gestureBox.GestureBox
@@ -26,7 +27,8 @@ fun Pages(
     drawerSearchText: State<String>,
     drawerSearchCallback: (String) -> Unit,
     dashboardVisibilityToggle: () -> Unit,
-    showWidgetSelectionSheet: () -> Unit
+    showWidgetSelectionSheet: () -> Unit,
+    widgetToolBox: WidgetToolBox,
 ) {
     val fling = PagerDefaults.flingBehavior(
         state = pagesPagerState,
@@ -51,6 +53,7 @@ fun Pages(
             )
 
             2 -> WidgetBox(
+                widgetToolBox = widgetToolBox,
                 showWidgetSelectionSheet = showWidgetSelectionSheet
             )
 

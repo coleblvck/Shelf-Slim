@@ -49,7 +49,9 @@ class WidgetTool(val host: AppWidgetHost, val manager: AppWidgetManager) {
                         providerInfo,
                         imageDensity
                     ),
-                    isPreview = true
+                    isPreview = true,
+                    positionalIndex = -1,
+                    verticalWeight = 0f
                 )
                 dataList.add(thisPreviewData)
             }

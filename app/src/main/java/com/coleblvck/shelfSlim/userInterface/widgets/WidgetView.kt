@@ -48,7 +48,8 @@ import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.Design
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.System
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.design.`Pencil-fill`
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Delete-bin-3-fill`
-import com.coleblvck.shelfSlim.state.LocalWidgetData
+import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
+import com.coleblvck.shelfSlim.state.LocalWidgetTool
 import com.coleblvck.shelfSlim.userInterface.common.ActionIcon
 import com.coleblvck.shelfSlim.userInterface.common.HorizontalSpacer
 import com.coleblvck.shelfSlim.userInterface.widgets.management.AppWidgetData
@@ -57,13 +58,11 @@ import kotlin.math.roundToInt
 @Composable
 fun WidgetView(
     modifier: Modifier,
+    widgetToolBox: WidgetToolBox,
     appWidgetData: AppWidgetData,
     isEditPreview: Boolean = false,
 ) {
-    val widgetData = LocalWidgetData.current
-    val widgetsState = widgetData.widgetsState
-    val widgetTool = widgetData.widgetTool
-    val dataSize = appWidgetData.size
+    val widgetTool = LocalWidgetTool.current
     /*
     // For Widgets that do not occupy all available space
     val size = remember {
@@ -133,7 +132,7 @@ fun WidgetView(
                             if (editDialogVisible.value) {
                                 WidgetEditDialog(
                                     widgetData = appWidgetData,
-                                    widgetsState = widgetsState,
+                                    widgetToolBox = widgetToolBox,
                                     onDismiss = { editDialogVisible.value = false }
                                 )
                             }
@@ -143,9 +142,8 @@ fun WidgetView(
                             ActionIcon(
                                 vector = RemixIcon.System.`Delete-bin-3-fill`,
                                 action = {
-                                    widgetsState.helper.removeUserWidget(
-                                        appWidgetData.appWidgetId,
-                                        widgetTool
+                                    widgetToolBox.removeUserWidget(
+                                        appWidgetData.appWidgetId
                                     )
                                 }
                             )
@@ -174,7 +172,6 @@ fun WidgetView(
         BoxWithConstraints {
             val currentWidth = maxWidth
             val currentHeight = maxHeight
-            dataSize.value = listOf(currentWidth, currentHeight)
             AndroidView(
                 modifier = modifier
                     .fillMaxSize()

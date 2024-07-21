@@ -12,15 +12,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.widgetTool.WidgetTool
 import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.widgetTool.widgetHost
 import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.widgetTool.widgetManager
-import com.coleblvck.shelfSlim.userInterface.widgets.state.WidgetsState
 import kotlinx.coroutines.awaitCancellation
 
-val LocalWidgetData =
-    staticCompositionLocalOf<WidgetData> { throw IllegalStateException("WidgetData has not been provided.") }
+val LocalWidgetTool =
+    staticCompositionLocalOf<WidgetTool> { throw IllegalStateException("WidgetTool has not been provided.") }
 
 @Composable
-fun WidgetDataProvider(
-    widgetsState: WidgetsState,
+fun WidgetToolProvider(
     content: @Composable () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -47,12 +45,7 @@ fun WidgetDataProvider(
         manager = widgetManager,
     )
 
-    val widgetData = WidgetData(
-        widgetsState = widgetsState,
-        widgetTool = widgetTool,
-    )
-
-    CompositionLocalProvider(LocalWidgetData provides widgetData) {
+    CompositionLocalProvider(LocalWidgetTool provides widgetTool) {
         content()
     }
 }

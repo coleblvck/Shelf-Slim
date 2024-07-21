@@ -37,7 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.coleblvck.shelfSlim.state.LocalWidgetData
+import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
+import com.coleblvck.shelfSlim.state.LocalWidgetTool
 import com.coleblvck.shelfSlim.userInterface.widgets.management.AppWidgetData
 import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.IntentExtraName
 import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.WidgetSelectionActivity
@@ -46,16 +47,14 @@ import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.Widget
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WidgetSelectionSheet(
+    widgetToolBox: WidgetToolBox,
     isWidgetSelectionSheetVisible: State<Boolean>,
     onDismiss: () -> Unit,
     sheetState: SheetState,
 ) {
-    val widgetData = LocalWidgetData.current
-    val widgetsState = widgetData.widgetsState
-    val userWidgets = widgetsState.userWidgets.widgets
     val density = LocalDensity.current
     val context = LocalContext.current
-    val widgetTool = widgetData.widgetTool
+    val widgetTool = LocalWidgetTool.current
     val widgetPreviews = widgetTool.getAllPreviewData(context.applicationContext, density)
     val packageManager = context.packageManager
     val startForResult =
@@ -84,9 +83,11 @@ fun WidgetSelectionSheet(
                             intentProviderInfo,
                             1
                         ),
-                        isPreview = false
+                        isPreview = false,
+                        positionalIndex = widgetToolBox.userWidgets.value.size,
+                        verticalWeight = 2f
                     )
-                    widgetsState.helper.addUserWidget(widgetData)
+                    widgetToolBox.addUserWidget(widgetData)
                 }
             }
         }
@@ -120,7 +121,7 @@ fun WidgetSelectionSheet(
                     state = rememberLazyListState(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    if (userWidgets.value.isNotEmpty()) {
+                    if (widgetToolBox.userWidgets.value.isNotEmpty()) {
                         item {
                             Text(
                                 color = MaterialTheme.colorScheme.onTertiary,
@@ -134,13 +135,15 @@ fun WidgetSelectionSheet(
                             )
                         }
                         items(
-                            userWidgets.value,
+                            widgetToolBox.userWidgets.value,
                             key = { it.appWidgetId },
                             itemContent = {
                                 WidgetView(
                                     modifier = Modifier
-                                        .fillMaxWidth(), appWidgetData = it,
-                                    isEditPreview = true
+                                        .fillMaxWidth(),
+                                    appWidgetData = it,
+                                    isEditPreview = true,
+                                    widgetToolBox = widgetToolBox
                                 )
                             }
                         )
@@ -175,6 +178,7 @@ fun WidgetSelectionSheet(
                                         initiateWidgetAdd(it.providerInfo)
                                         onDismiss()
                                     },
+                                widgetToolBox = widgetToolBox,
                                 appWidgetData = it
                             )
                         }

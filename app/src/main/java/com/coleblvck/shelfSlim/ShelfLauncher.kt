@@ -13,9 +13,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.view.WindowInsetsControllerCompat
+import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
+import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
 import com.coleblvck.shelfSlim.data.userPreferences.UserPreferences
 import com.coleblvck.shelfSlim.data.userPreferences.UserPreferencesToolBox
-import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
 import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.userInterface.desktop.Desktop
 import com.coleblvck.shelfSlim.userInterface.desktop.DesktopState
@@ -39,6 +40,7 @@ fun ShelfLauncher(
     userPreferences: UserPreferences,
     userPreferencesToolBox: UserPreferencesToolBox,
     customFunctionToolBox: CustomFunctionToolBox,
+    widgetToolBox: WidgetToolBox
 ) {
 
     val systemUiController = rememberSystemUiController()
@@ -121,6 +123,7 @@ fun ShelfLauncher(
         customFunctionToolBox = customFunctionToolBox,
         showWidgetSelectionSheet = desktopState.showWidgetSelectionSheet,
         systemUiVisibilityToggle = desktopState.toggleSystemUiVisibility,
+        widgetToolBox = widgetToolBox
     )
 
     CustomMappingDialog(
@@ -136,6 +139,7 @@ fun ShelfLauncher(
     )
 
     WidgetSelectionSheet(
+        widgetToolBox = widgetToolBox,
         isWidgetSelectionSheetVisible = desktopState.isWidgetSelectionSheetVisible,
         onDismiss = { desktopState.isWidgetSelectionSheetVisible.value = false },
         sheetState = widgetSelectionSheetState,

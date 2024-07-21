@@ -7,4 +7,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "Widget")
 data class Widget (
     @ColumnInfo(name = "id") @PrimaryKey val id: Int,
+    @ColumnInfo(name = "positionalIndex") val positionalIndex: Int,
+    @ColumnInfo(name = "verticalWeight") val verticalWeight: Float
 )

@@ -14,7 +14,7 @@ import com.coleblvck.shelfSlim.data.Warehouse
 import com.coleblvck.shelfSlim.data.userPreferences.shelfDataStore
 import com.coleblvck.shelfSlim.state.ShelfViewModel
 import com.coleblvck.shelfSlim.state.UserPreferencesViewModel
-import com.coleblvck.shelfSlim.state.WidgetDataProvider
+import com.coleblvck.shelfSlim.state.WidgetToolProvider
 import com.coleblvck.shelfSlim.userInterface.theme.ShelfTheme
 
 class ShelfActivity : ComponentActivity() {
@@ -24,15 +24,16 @@ class ShelfActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val warehouse = Warehouse(this)
-        shelfViewModel = ViewModelProvider(this, ShelfViewModel.Factory(warehouse, Shelf.get()))[ShelfViewModel::class.java]
-        userPreferencesViewModel = ViewModelProvider(this, UserPreferencesViewModel.Factory(this.shelfDataStore, warehouse))[UserPreferencesViewModel::class.java]
+        val shelf = Shelf.get()
+        val warehouse = Warehouse(shelf)
+        shelfViewModel = ViewModelProvider(this, ShelfViewModel.Factory(warehouse, shelf))[ShelfViewModel::class.java]
+        userPreferencesViewModel = ViewModelProvider(this, UserPreferencesViewModel.Factory(this.applicationContext.shelfDataStore, warehouse))[UserPreferencesViewModel::class.java]
         setContent {
             ShelfTheme {
                 Scaffold(
                     containerColor = Color.Transparent,
                 ) { contentPadding ->
-                    WidgetDataProvider(widgetsState = shelfViewModel.widgetsState) {
+                    WidgetToolProvider {
                         ShelfLauncher(
                             modifier = Modifier.padding(contentPadding),
                             desktopState = shelfViewModel.desktopState,
@@ -41,6 +42,7 @@ class ShelfActivity : ComponentActivity() {
                             userPreferences = userPreferencesViewModel.userPreferences,
                             userPreferencesToolBox = userPreferencesViewModel.userPreferencesToolBox,
                             customFunctionToolBox = shelfViewModel.customFunctionToolBox,
+                            widgetToolBox = shelfViewModel.widgetToolBox
                         )
                     }
                 }

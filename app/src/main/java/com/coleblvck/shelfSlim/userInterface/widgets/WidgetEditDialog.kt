@@ -10,9 +10,10 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,20 +28,19 @@ import com.coleblvck.shelfSlim.contentManagement.remixIcons.RemixIcon
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.Arrows
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.arrows.`Arrow-down-fill`
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.arrows.`Arrow-up-fill`
+import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
 import com.coleblvck.shelfSlim.userInterface.common.ActionIcon
 import com.coleblvck.shelfSlim.userInterface.widgets.management.AppWidgetData
-import com.coleblvck.shelfSlim.userInterface.widgets.state.WidgetsState
+import java.math.RoundingMode
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WidgetEditDialog(
+    widgetToolBox: WidgetToolBox,
     widgetData: AppWidgetData,
-    widgetsState: WidgetsState,
     onDismiss: () -> Unit,
 ) {
-    val weightList = listOf(1f, 2f, 3f, 4f)
-
     AlertDialog(
         onDismissRequest = onDismiss,
         content = {
@@ -51,10 +51,12 @@ fun WidgetEditDialog(
                 )
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Row (
+                    Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -85,63 +87,56 @@ fun WidgetEditDialog(
                                 modifier = Modifier.padding(8.dp),
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight(600),
-                                text = "Vertical Weight"
+                                text = "Vertical Weight-Ratio: ${
+                                    (1 / widgetData.verticalWeight).toBigDecimal()
+                                        .setScale(1, RoundingMode.HALF_EVEN)
+                                }"
                             )
-                            Row {
-                                weightList.forEach { weight ->
-                                    ElevatedCard(
-                                        colors = CardDefaults.elevatedCardColors(
-                                            containerColor = if (widgetData.verticalWeight.value == weight) {
-                                                MaterialTheme.colorScheme.primary
-                                            } else {
-                                                MaterialTheme.colorScheme.background
-                                            },
-                                            contentColor = if (widgetData.verticalWeight.value == weight) {
-                                                MaterialTheme.colorScheme.onPrimary
-                                            } else {
-                                                MaterialTheme.colorScheme.onBackground
-                                            },
-                                        ),
-                                        onClick = { widgetData.verticalWeight.value = weight }
-                                    ) {
-                                        Text(
-                                            modifier = Modifier.padding(8.dp),
-                                            fontSize = 20.sp,
-                                            fontWeight = FontWeight(600),
-                                            text = weight.toString()
-                                        )
-                                    }
-                                }
-                            }
+                            Slider(
+                                value = 1 / widgetData.verticalWeight,
+                                onValueChange = { value ->
+                                    widgetToolBox.updateUserWidgetWeight(
+                                        widgetData,
+                                        value
+                                    )
+                                },
+                                steps = 17,
+                                valueRange = 0.2f..2f,
+                                colors = SliderDefaults.colors(
+                                    thumbColor = MaterialTheme.colorScheme.tertiary,
+                                    activeTrackColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
                         }
-                        if (widgetsState.userWidgets.widgets.value.size > 1) {
+                        if (widgetToolBox.userWidgets.value.size > 1) {
                             Column(
                                 modifier = Modifier
                                     .weight(1f),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-
-                                if (widgetsState.userWidgets.widgets.value.indexOf(widgetData) != 0) {
+                                val widgetIndex =
+                                    widgetToolBox.userWidgets.value.indexOf(widgetData)
+                                if (widgetIndex != 0) {
                                     ActionIcon(
                                         modifier = Modifier.size(40.dp),
                                         vector = RemixIcon.Arrows.`Arrow-up-fill`,
                                         action = {
-                                            widgetsState.helper.userWidgetShift(
-                                                widgetData,
-                                                -1
+                                            widgetToolBox.reorderUserWidgets(
+                                                widgetIndex,
+                                                widgetIndex - 1
                                             )
                                         }
                                     )
                                 }
-                                if (widgetsState.userWidgets.widgets.value.indexOf(widgetData) != widgetsState.userWidgets.widgets.value.size - 1) {
+                                if (widgetIndex != widgetToolBox.userWidgets.value.size - 1) {
                                     ActionIcon(
                                         modifier = Modifier.size(40.dp),
                                         vector = RemixIcon.Arrows.`Arrow-down-fill`,
                                         action = {
-                                            widgetsState.helper.userWidgetShift(
-                                                widgetData,
-                                                +1
+                                            widgetToolBox.reorderUserWidgets(
+                                                widgetIndex,
+                                                widgetIndex + 1
                                             )
                                         }
                                     )

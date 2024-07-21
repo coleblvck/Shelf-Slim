@@ -15,6 +15,7 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.coleblvck.shelfSlim.contentManagement.App
+import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
 import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
 import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.userInterface.desktop.dashboard.Dashboard
@@ -57,6 +58,7 @@ fun Desktop(
     customFunctionToolBox: CustomFunctionToolBox,
     showWidgetSelectionSheet: () -> Unit,
     systemUiVisibilityToggle: () -> Unit,
+    widgetToolBox: WidgetToolBox,
 ) {
     val flow: @Composable (modifier: Modifier) -> Unit = { modifier: Modifier ->
         Flow(
@@ -83,7 +85,8 @@ fun Desktop(
             drawerSearchText = drawerSearchText,
             drawerSearchCallback = drawerSearchCallback,
             dashboardVisibilityToggle = dashboardVisibilityToggle,
-            showWidgetSelectionSheet = showWidgetSelectionSheet
+            showWidgetSelectionSheet = showWidgetSelectionSheet,
+            widgetToolBox = widgetToolBox
         )
     }
     val dashboard: @Composable () -> Unit = {
