@@ -1,4 +1,4 @@
-package com.coleblvck.shelfSlim.data.tools.packageChangeHandler
+package com.coleblvck.shelfSlim.contentManagement.listeners.packageChangeListener
 
 
 class PackageUpdateHandler(private val updateContent: () -> Unit) :

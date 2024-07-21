@@ -1,8 +1,8 @@
-package com.coleblvck.shelfSlim.state
+package com.coleblvck.shelfSlim.contentManagement.listeners
 
 import android.content.Context
-import com.coleblvck.shelfSlim.data.tools.packageChangeHandler.PackageChangeListener
-import com.coleblvck.shelfSlim.data.tools.packageChangeHandler.PackageUpdateHandler
+import com.coleblvck.shelfSlim.contentManagement.listeners.packageChangeListener.PackageChangeListener
+import com.coleblvck.shelfSlim.contentManagement.listeners.packageChangeListener.PackageUpdateHandler
 
 class Listeners (updateContent: () -> Unit) {
     private val packageChangeListener = PackageChangeListener(PackageUpdateHandler(updateContent))

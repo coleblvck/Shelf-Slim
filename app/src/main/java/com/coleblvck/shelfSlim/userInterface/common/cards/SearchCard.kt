@@ -12,6 +12,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -33,7 +34,7 @@ import com.coleblvck.shelfSlim.utils.Utils
 
 @Composable
 fun SearchCard(
-    searchText: String,
+    searchText: State<String>,
     searchCallback: (String) -> Unit,
 ) {
     val context = LocalContext.current
@@ -61,7 +62,7 @@ fun SearchCard(
                     .size(30.dp)
             )
             BasicTextField(
-                value = searchText,
+                value = searchText.value,
                 onValueChange = searchCallback,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -75,13 +76,13 @@ fun SearchCard(
                 ),
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.onTertiary)
             )
-            if (searchText != "") {
+            if (searchText.value != "") {
                 Icon(
                     RemixIcon.Logos.`Firefox-fill`,
                     contentDescription = "Web Search Icon",
                     modifier = Modifier
                         .size(30.dp)
-                        .clickable { Utils.launchWebSearch(searchText, context) }
+                        .clickable { Utils.launchWebSearch(searchText.value, context) }
                 )
                 Icon(
                     RemixIcon.System.`Close-circle-fill`,

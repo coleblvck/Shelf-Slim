@@ -12,6 +12,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -23,11 +24,11 @@ import com.coleblvck.shelfSlim.userInterface.theme.colorWithAlpha
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FlowHeader(
-    flowHeaderHeading: String,
+    flowHeaderHeading: State<String>,
     updateFlowHeaderHeading: (String) -> Unit,
-    flowHeaderSubHeading: String,
+    flowHeaderSubHeading: State<String>,
     updateFlowHeaderSubHeading: (String) -> Unit,
-    flowHeaderEditDialogVisible: Boolean,
+    flowHeaderEditDialogVisible: State<Boolean>,
     updateFlowHeaderEditDialogVisibility: (Boolean) -> Unit,
     updateHintVisibility: (Boolean) -> Unit,
 ) {
@@ -61,16 +62,16 @@ fun FlowHeader(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (flowHeaderHeading != "") {
+                if (flowHeaderHeading.value != "") {
                     Text(
-                        text = flowHeaderHeading,
+                        text = flowHeaderHeading.value,
                         fontSize = 60.sp,
                         fontWeight = FontWeight.W900
                     )
                 }
-                if (flowHeaderSubHeading != "") {
+                if (flowHeaderSubHeading.value != "") {
                     Text(
-                        text = flowHeaderSubHeading,
+                        text = flowHeaderSubHeading.value,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.W500
                     )

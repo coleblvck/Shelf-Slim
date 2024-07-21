@@ -5,10 +5,11 @@ import android.content.pm.PackageManager
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.coleblvck.shelfSlim.contentManagement.App
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 class AppListToolBox(private val packageManager: PackageManager) {
@@ -18,15 +19,15 @@ class AppListToolBox(private val packageManager: PackageManager) {
     )
     val allApps: State<List<App>> get() = _allApps
 
-    private val _drawerApps: MutableLiveData<List<App>> by lazy {
-        MutableLiveData<List<App>>()
-    }
+    private val _drawerApps: MutableState<List<App>>  = mutableStateOf(listOf())
 
-    val drawerApps: LiveData<List<App>> get() = _drawerApps
+    val drawerApps: State<List<App>> get() = _drawerApps
 
-    fun filterApps(term: String) {
-        _drawerApps.value = allApps.value.filter {
-            app: App -> app.name.lowercase().contains(term.lowercase())
+    private fun filterApps(term: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            _drawerApps.value = allApps.value.filter {
+                    app: App -> app.name.lowercase().contains(term.lowercase())
+            }
         }
     }
 

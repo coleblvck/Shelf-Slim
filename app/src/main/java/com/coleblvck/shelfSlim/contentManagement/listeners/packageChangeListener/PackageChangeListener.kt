@@ -1,4 +1,4 @@
-package com.coleblvck.shelfSlim.data.tools.packageChangeHandler
+package com.coleblvck.shelfSlim.contentManagement.listeners.packageChangeListener
 
 import android.content.BroadcastReceiver
 import android.content.Context

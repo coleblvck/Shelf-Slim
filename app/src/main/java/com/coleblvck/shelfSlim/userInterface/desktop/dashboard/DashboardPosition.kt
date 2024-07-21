@@ -1,6 +1,5 @@
 package com.coleblvck.shelfSlim.userInterface.desktop.dashboard
 
-
 enum class DashboardPosition {
     BOTTOM, TOP, LEFT, RIGHT
 }

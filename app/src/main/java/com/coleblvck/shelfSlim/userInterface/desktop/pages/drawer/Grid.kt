@@ -14,6 +14,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.coleblvck.shelfSlim.contentManagement.App
@@ -21,7 +22,7 @@ import com.coleblvck.shelfSlim.userInterface.theme.colorWithAlpha
 
 @Composable
 fun Grid(
-    apps: List<App>,
+    drawerApps: State<List<App>>,
     state: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
     contentPadding: PaddingValues = PaddingValues(12.dp)
 ) {
@@ -47,7 +48,7 @@ fun Grid(
             flingBehavior = ScrollableDefaults.flingBehavior(),
         ) {
             itemsIndexed(
-                items = apps,
+                items = drawerApps.value,
                 key = { index, app -> "$index - ${app.packageName}" },
                 contentType = { _, _ -> "App" }
             ) { _, app ->

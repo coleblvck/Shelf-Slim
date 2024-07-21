@@ -15,15 +15,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.view.WindowInsetsControllerCompat
 import com.coleblvck.shelfSlim.data.userPreferences.UserPreferences
 import com.coleblvck.shelfSlim.data.userPreferences.UserPreferencesToolBox
-import com.coleblvck.shelfSlim.state.CustomFunctionToolBox
+import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
 import com.coleblvck.shelfSlim.state.ShelfPagerState
-import com.coleblvck.shelfSlim.state.getIconValue
 import com.coleblvck.shelfSlim.userInterface.desktop.Desktop
 import com.coleblvck.shelfSlim.userInterface.desktop.DesktopState
 import com.coleblvck.shelfSlim.userInterface.desktop.dashboard.DashboardPosition
 import com.coleblvck.shelfSlim.userInterface.desktop.dashboard.getDashboardPosition
 import com.coleblvck.shelfSlim.userInterface.desktop.hint.HintDialog
-import com.coleblvck.shelfSlim.userInterface.desktop.hint.hintContent
 import com.coleblvck.shelfSlim.userInterface.misc.CustomMappingDialog
 import com.coleblvck.shelfSlim.userInterface.widgets.WidgetSelectionSheet
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -34,13 +32,13 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun ShelfLauncher(
+    modifier: Modifier,
     desktopState: DesktopState,
     flowPagerState: ShelfPagerState,
     pagesPagerState: ShelfPagerState,
     userPreferences: UserPreferences,
     userPreferencesToolBox: UserPreferencesToolBox,
     customFunctionToolBox: CustomFunctionToolBox,
-    modifier: Modifier,
 ) {
 
     val systemUiController = rememberSystemUiController()
@@ -71,6 +69,17 @@ fun ShelfLauncher(
         }
     }
 
+    val animateToFlowNote: () -> Unit = {
+        if (!userPreferences.flowVisible.value) {
+            userPreferencesToolBox.updateFlowVisibility(true)
+        }
+        if (flowPagerState.currentPage != 1) {
+            coroutineScope.launch {
+                flowPagerState.animateScrollToPage(1)
+            }
+        }
+    }
+
     val dashIsHorizontal = {
         val dashPosition = getDashboardPosition(userPreferences.dashboardPosition.value)
         dashPosition == DashboardPosition.BOTTOM || dashPosition == DashboardPosition.TOP
@@ -82,48 +91,48 @@ fun ShelfLauncher(
 
     Desktop(
         orientation = configuration.orientation,
-        isFlowVisible = userPreferences.flowVisible.value,
+        isFlowVisible = userPreferences.flowVisible,
         flowVisibilityToggle = { coroutineScope.launch { userPreferencesToolBox.toggleFlowVisibility() } },
         flowPagerState = flowPagerState,
-        flowHeaderHeading = userPreferences.headerHeading.value,
+        flowHeaderHeading = userPreferences.headerHeading,
         updateFlowHeaderHeading = userPreferencesToolBox::updateHeaderHeading,
-        flowHeaderSubHeading = userPreferences.headerSubHeading.value,
+        flowHeaderSubHeading = userPreferences.headerSubHeading,
         updateFlowHeaderSubHeading = userPreferencesToolBox::updateHeaderSubHeading,
-        flowHeaderEditDialogVisible = flowHeaderEditDialogVisible.value,
+        flowHeaderEditDialogVisible = flowHeaderEditDialogVisible,
         updateFlowHeaderEditDialogVisibility = { flowHeaderEditDialogVisible.value = it },
-        flowNoteText = userPreferences.flowNote.value,
+        flowNoteText = userPreferences.flowNote,
         updateFlowNoteText = userPreferencesToolBox::updateFlowNote,
-        flowAnimateToNote = {},
+        flowAnimateToNote = animateToFlowNote,
         updateHintVisibility = desktopState.updateHintVisibility,
         pagesPagerState = pagesPagerState,
         drawerApps = desktopState.appListToolBox.drawerApps,
-        drawerType = userPreferences.drawerType.value,
+        drawerType = userPreferences.drawerType,
         updateDrawerType = userPreferencesToolBox::updateDrawerType,
-        drawerSearchText = desktopState.appListToolBox.searchText.value,
+        drawerSearchText = desktopState.appListToolBox.searchText,
         drawerSearchCallback = desktopState.appListToolBox.search,
-        dashIsHorizontal = dashIsHorizontal(),
-        currentDashboardPosition = userPreferences.dashboardPosition.value,
+        dashIsHorizontal = dashIsHorizontal,
+        currentDashboardPosition = userPreferences.dashboardPosition,
         updateDashboardPosition = userPreferencesToolBox::updateDashboardPosition,
-        isDashboardVisible = userPreferences.dashboardVisible.value,
+        isDashboardVisible = userPreferences.dashboardVisible,
         dashboardVisibilityToggle = userPreferencesToolBox::toggleDashboardVisibility,
-        customFunctionAction = userPreferences.customFunctionAction.value,
-        customFunctionIcon = getIconValue(userPreferences.customFunctionIcon.value),
-        customFunctionParameter = userPreferences.customFunctionPackage.value,
+        customFunctionAction = userPreferences.customFunctionAction,
+        customFunctionIcon = userPreferences.customFunctionIcon,
+        customFunctionParameter = userPreferences.customFunctionPackage,
         customFunctionToolBox = customFunctionToolBox,
         showWidgetSelectionSheet = desktopState.showWidgetSelectionSheet,
         systemUiVisibilityToggle = desktopState.toggleSystemUiVisibility,
     )
 
     CustomMappingDialog(
-        currentCustomFunctionIcon = getIconValue(userPreferences.customFunctionIcon.value),
+        currentCustomFunctionIcon = userPreferences.customFunctionIcon,
         updateCustomFunctionIcon = userPreferencesToolBox::updateCustomFunctionIcon,
-        currentCustomFunctionAction = userPreferences.customFunctionAction.value,
+        currentCustomFunctionAction = userPreferences.customFunctionAction,
         updateCustomFunctionAction = userPreferencesToolBox::updateCustomFunctionAction,
-        currentCustomFunctionParameter = userPreferences.customFunctionPackage.value,
+        currentCustomFunctionParameter = userPreferences.customFunctionPackage,
         updateCustomFunctionParameter = userPreferencesToolBox::updateCustomFunctionPackage,
-        isCustomMappingDialogVisible = customFunctionToolBox.mappingDialogVisible.value,
+        isCustomMappingDialogVisible = customFunctionToolBox.mappingDialogVisible,
         updateCustomMappingDialogVisibility = customFunctionToolBox.setMappingDialogVisibility,
-        allApps = desktopState.appListToolBox.allApps.value
+        allApps = desktopState.appListToolBox.allApps
     )
 
     WidgetSelectionSheet(
@@ -136,10 +145,8 @@ fun ShelfLauncher(
     HintDialog(
         isHintVisible = desktopState.isHintVisible.value,
         updateHintVisibility = desktopState.updateHintVisibility,
-        hintContent = hintContent(
-            userPreferences.dashboardPosition.value,
-            dashIsHorizontal(),
-            getIconValue(userPreferences.customFunctionIcon.value)
-        )
+        dashIsHorizontal = dashIsHorizontal,
+        dashboardPosition = userPreferences.dashboardPosition,
+        currentCustomFunctionIcon = userPreferences.customFunctionIcon
     )
 }

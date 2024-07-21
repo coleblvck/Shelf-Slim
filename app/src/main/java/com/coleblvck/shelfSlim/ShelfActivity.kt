@@ -34,13 +34,13 @@ class ShelfActivity : ComponentActivity() {
                 ) { contentPadding ->
                     WidgetDataProvider(widgetsState = shelfViewModel.widgetsState) {
                         ShelfLauncher(
+                            modifier = Modifier.padding(contentPadding),
                             desktopState = shelfViewModel.desktopState,
                             flowPagerState = shelfViewModel.flowPagerState,
                             pagesPagerState = shelfViewModel.pagesPagerState,
                             userPreferences = userPreferencesViewModel.userPreferences,
                             userPreferencesToolBox = userPreferencesViewModel.userPreferencesToolBox,
                             customFunctionToolBox = shelfViewModel.customFunctionToolBox,
-                            modifier = Modifier.padding(contentPadding),
                         )
                     }
                 }

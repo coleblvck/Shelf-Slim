@@ -15,6 +15,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
@@ -26,14 +27,14 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HeaderEditDialog(
-    flowHeaderHeading: String,
+    flowHeaderHeading: State<String>,
     updateFlowHeaderHeading: (String) -> Unit,
-    flowHeaderSubHeading: String,
+    flowHeaderSubHeading: State<String>,
     updateFlowHeaderSubHeading: (String) -> Unit,
-    flowHeaderEditDialogVisible: Boolean,
+    flowHeaderEditDialogVisible: State<Boolean>,
     updateFlowHeaderEditDialogVisibility: (Boolean) -> Unit
 ) {
-    if (flowHeaderEditDialogVisible) {
+    if (flowHeaderEditDialogVisible.value) {
         AlertDialog(
             onDismissRequest = {
                 updateFlowHeaderEditDialogVisibility(false)
@@ -67,7 +68,7 @@ fun HeaderEditDialog(
                                 modifier = Modifier
                                     .padding(12.dp)
                                     .fillMaxSize(),
-                                value = flowHeaderHeading,
+                                value = flowHeaderHeading.value,
                                 onValueChange = updateFlowHeaderHeading,
                                 visualTransformation = VisualTransformation.None,
                                 singleLine = false,
@@ -96,7 +97,7 @@ fun HeaderEditDialog(
                                 modifier = Modifier
                                     .padding(12.dp)
                                     .fillMaxSize(),
-                                value = flowHeaderSubHeading,
+                                value = flowHeaderSubHeading.value,
                                 onValueChange = updateFlowHeaderSubHeading,
                                 visualTransformation = VisualTransformation.None,
                                 singleLine = false,

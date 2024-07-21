@@ -11,6 +11,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.userInterface.desktop.flow.flowHeader.FlowHeader
@@ -20,20 +21,20 @@ import com.coleblvck.shelfSlim.userInterface.desktop.flow.flowNote.FlowNote
 @Composable
 fun Flow(
     modifier: Modifier = Modifier,
-    isFlowVisible: Boolean,
+    isFlowVisible: State<Boolean>,
     flowPagerState: ShelfPagerState,
-    flowHeaderHeading: String,
+    flowHeaderHeading: State<String>,
     updateFlowHeaderHeading: (String) -> Unit,
-    flowHeaderSubHeading: String,
+    flowHeaderSubHeading: State<String>,
     updateFlowHeaderSubHeading: (String) -> Unit,
-    flowHeaderEditDialogVisible: Boolean,
+    flowHeaderEditDialogVisible: State<Boolean>,
     updateFlowHeaderEditDialogVisibility: (Boolean) -> Unit,
-    flowNoteText: String,
+    flowNoteText: State<String>,
     updateFlowNoteText: (String) -> Unit,
     updateHintVisibility: (Boolean) -> Unit,
 ) {
     AnimatedVisibility(
-        visible = isFlowVisible,
+        visible = isFlowVisible.value,
         modifier = modifier,
         enter = slideInHorizontally() + expandHorizontally() + fadeIn(),
         exit = slideOutHorizontally() + shrinkHorizontally() + fadeOut()

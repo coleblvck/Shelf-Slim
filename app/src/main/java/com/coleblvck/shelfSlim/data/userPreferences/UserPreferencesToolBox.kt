@@ -9,7 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.coleblvck.shelfSlim.data.Warehouse
 import com.coleblvck.shelfSlim.data.entities.text.Text
-import com.coleblvck.shelfSlim.state.ActionType
+import com.coleblvck.shelfSlim.data.tools.ActionType
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

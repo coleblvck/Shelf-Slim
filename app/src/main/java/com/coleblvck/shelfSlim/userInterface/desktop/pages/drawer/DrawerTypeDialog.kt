@@ -3,7 +3,8 @@ package com.coleblvck.shelfSlim.userInterface.desktop.pages.drawer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import com.coleblvck.shelfSlim.userInterface.common.cards.DialogButtonCard
+import androidx.compose.runtime.State
+import com.coleblvck.shelfSlim.userInterface.common.cards.ConditionalColorButtonCard
 import com.coleblvck.shelfSlim.userInterface.common.cards.DialogColumnCard
 
 
@@ -11,7 +12,7 @@ import com.coleblvck.shelfSlim.userInterface.common.cards.DialogColumnCard
 @Composable
 fun DrawerTypeDialog(
     onDismiss: () -> Unit,
-    currentDrawerType: String,
+    currentDrawerType: State<String>,
     updateDrawerType: (String) -> Unit,
 ) {
     AlertDialog(
@@ -21,8 +22,8 @@ fun DrawerTypeDialog(
                 headingText = "Drawer Type"
             ) {
                 for (drawerType in DrawerType.entries) {
-                    DialogButtonCard(
-                        selectionColorCondition = getDrawerType(currentDrawerType) == drawerType,
+                    ConditionalColorButtonCard(
+                        selectionColorCondition = getDrawerType(currentDrawerType.value) == drawerType,
                         text = drawerType.name
                     ) {
                         updateDrawerType(drawerType.name)

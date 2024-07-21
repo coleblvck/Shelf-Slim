@@ -1,10 +1,8 @@
-package com.coleblvck.shelfSlim.state
+package com.coleblvck.shelfSlim.data.tools
 
 import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.vector.ImageVector
-import com.coleblvck.shelfSlim.userInterface.common.iconMap
 import com.coleblvck.shelfSlim.utils.Utils
 
 
@@ -34,11 +32,6 @@ class CustomFunctionToolBox{
             }
         }
     }
-}
-
-
-val getIconValue: (String) -> ImageVector = {
-    iconMap[it]!!
 }
 
 val getActionTypeValue: (String) -> ActionType = {

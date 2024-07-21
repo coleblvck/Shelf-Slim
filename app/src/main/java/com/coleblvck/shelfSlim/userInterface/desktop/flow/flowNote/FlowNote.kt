@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,7 +27,7 @@ import com.coleblvck.shelfSlim.userInterface.theme.colorWithAlpha
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlowNote(
-    flowNoteText: String,
+    flowNoteText: State<String>,
     updateFlowNoteText: (String) -> Unit,
 ) {
 
@@ -52,7 +53,7 @@ fun FlowNote(
             modifier = Modifier
                 .padding(12.dp)
                 .fillMaxSize(),
-            value = flowNoteText,
+            value = flowNoteText.value,
             onValueChange = updateFlowNoteText,
             visualTransformation = VisualTransformation.None,
             interactionSource = interactionSource,
@@ -66,7 +67,7 @@ fun FlowNote(
         ) {
                 innerTextField ->
             OutlinedTextFieldDefaults.DecorationBox(
-                value = flowNoteText,
+                value = flowNoteText.value,
                 innerTextField = innerTextField,
                 enabled = enabled,
                 singleLine = singleLine,

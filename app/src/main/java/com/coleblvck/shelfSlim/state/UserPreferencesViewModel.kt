@@ -25,7 +25,7 @@ class UserPreferencesViewModel(val store: DataStore<Preferences>, val warehouse:
         flowVisible = mutableStateOf(true),
         dashboardVisible = mutableStateOf(true),
         drawerType = mutableStateOf("GRID"),
-        customFunctionIcon = mutableStateOf("Pulse"),
+        customFunctionIcon = mutableStateOf("PULSE"),
         customFunctionPackage = mutableStateOf(""),
         customFunctionAction = mutableStateOf("PACKAGE_RUN"),
         dashboardPosition = mutableStateOf("BOTTOM")
@@ -46,14 +46,13 @@ class UserPreferencesViewModel(val store: DataStore<Preferences>, val warehouse:
             userPreferences.flowNote.value = getTextFromRepo("flowNote", userPreferences.flowNote.value)
             userPreferences.headerHeading.value = getTextFromRepo("headerHeading", userPreferences.headerHeading.value)
             userPreferences.headerSubHeading.value = getTextFromRepo("headerSubHeading", userPreferences.headerSubHeading.value)
-            userPreferences.flowVisible.value = preferences[PreferenceKeys.FLOW_VISIBILITY] ?: true
-            userPreferences.dashboardVisible.value = preferences[PreferenceKeys.DASHBOARD_VISIBILITY] ?: true
-            userPreferences.drawerType.value = preferences[PreferenceKeys.DRAWER_TYPE] ?: "GRID"
-            userPreferences.customFunctionIcon.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_ICON] ?: "Pulse"
-            userPreferences.customFunctionPackage.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_PACKAGE] ?: ""
-            userPreferences.customFunctionAction.value =
-                preferences[PreferenceKeys.CUSTOM_FUNCTION_ACTION] ?: "PACKAGE_RUN"
-            userPreferences.dashboardPosition.value = preferences[PreferenceKeys.DASHBOARD_POSITION] ?: "BOTTOM"
+            userPreferences.flowVisible.value = preferences[PreferenceKeys.FLOW_VISIBILITY] ?: userPreferences.flowVisible.value
+            userPreferences.dashboardVisible.value = preferences[PreferenceKeys.DASHBOARD_VISIBILITY] ?: userPreferences.dashboardVisible.value
+            userPreferences.drawerType.value = preferences[PreferenceKeys.DRAWER_TYPE] ?: userPreferences.drawerType.value
+            userPreferences.customFunctionIcon.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_ICON] ?: userPreferences.customFunctionIcon.value
+            userPreferences.customFunctionPackage.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_PACKAGE] ?: userPreferences.customFunctionPackage.value
+            userPreferences.customFunctionAction.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_ACTION] ?: userPreferences.customFunctionAction.value
+            userPreferences.dashboardPosition.value = preferences[PreferenceKeys.DASHBOARD_POSITION] ?: userPreferences.dashboardPosition.value
         }
     }
 

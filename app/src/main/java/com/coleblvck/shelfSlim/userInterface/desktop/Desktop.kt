@@ -11,12 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LiveData
 import com.coleblvck.shelfSlim.contentManagement.App
-import com.coleblvck.shelfSlim.state.CustomFunctionToolBox
+import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
 import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.userInterface.desktop.dashboard.Dashboard
 import com.coleblvck.shelfSlim.userInterface.desktop.dashboard.DashboardPosition
@@ -28,33 +27,33 @@ import com.coleblvck.shelfSlim.userInterface.desktop.pages.Pages
 @Composable
 fun Desktop(
     orientation: Int,
-    isFlowVisible: Boolean,
+    isFlowVisible: State<Boolean>,
     flowVisibilityToggle: () -> Unit,
     flowPagerState: ShelfPagerState,
-    flowHeaderHeading: String,
+    flowHeaderHeading: State<String>,
     updateFlowHeaderHeading: (String) -> Unit,
-    flowHeaderSubHeading: String,
+    flowHeaderSubHeading: State<String>,
     updateFlowHeaderSubHeading: (String) -> Unit,
-    flowHeaderEditDialogVisible: Boolean,
+    flowHeaderEditDialogVisible: State<Boolean>,
     updateFlowHeaderEditDialogVisibility: (Boolean) -> Unit,
-    flowNoteText: String,
+    flowNoteText: State<String>,
     updateFlowNoteText: (String) -> Unit,
     flowAnimateToNote: () -> Unit,
     updateHintVisibility: (Boolean) -> Unit,
     pagesPagerState: ShelfPagerState,
-    drawerApps: LiveData<List<App>>,
-    drawerType: String,
+    drawerApps: State<List<App>>,
+    drawerType: State<String>,
     updateDrawerType: (String) -> Unit,
-    drawerSearchText: String,
+    drawerSearchText: State<String>,
     drawerSearchCallback: (String) -> Unit,
-    dashIsHorizontal: Boolean,
-    currentDashboardPosition: String,
+    dashIsHorizontal: () -> Boolean,
+    currentDashboardPosition: State<String>,
     updateDashboardPosition: (String) -> Unit,
-    isDashboardVisible: Boolean,
+    isDashboardVisible: State<Boolean>,
     dashboardVisibilityToggle: () -> Unit,
-    customFunctionAction: String,
-    customFunctionIcon: ImageVector,
-    customFunctionParameter: String,
+    customFunctionAction: State<String>,
+    customFunctionIcon: State<String>,
+    customFunctionParameter: State<String>,
     customFunctionToolBox: CustomFunctionToolBox,
     showWidgetSelectionSheet: () -> Unit,
     systemUiVisibilityToggle: () -> Unit,
@@ -113,7 +112,7 @@ fun Desktop(
                 .padding(vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            if (getDashboardPosition(currentDashboardPosition) == DashboardPosition.TOP) {
+            if (getDashboardPosition(currentDashboardPosition.value) == DashboardPosition.TOP) {
                 dashboard()
             }
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -129,7 +128,7 @@ fun Desktop(
                     pages(Modifier.weight(1f))
                 }
             }
-            if (getDashboardPosition(currentDashboardPosition) == DashboardPosition.BOTTOM) {
+            if (getDashboardPosition(currentDashboardPosition.value) == DashboardPosition.BOTTOM) {
                 dashboard()
             }
         }
@@ -141,7 +140,7 @@ fun Desktop(
                 .padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            if (getDashboardPosition(currentDashboardPosition) == DashboardPosition.LEFT) {
+            if (getDashboardPosition(currentDashboardPosition.value) == DashboardPosition.LEFT) {
                 dashboard()
             }
             Column(
@@ -165,12 +164,12 @@ fun Desktop(
                     }
                 }
             }
-            if (getDashboardPosition(currentDashboardPosition) == DashboardPosition.RIGHT) {
+            if (getDashboardPosition(currentDashboardPosition.value) == DashboardPosition.RIGHT) {
                 dashboard()
             }
         }
     }
-    if (dashIsHorizontal) {
+    if (dashIsHorizontal()) {
         horizontalDashDesktop()
     } else {
         verticalDashDesktop()

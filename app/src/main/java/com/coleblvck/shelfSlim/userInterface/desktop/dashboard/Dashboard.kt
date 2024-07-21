@@ -21,6 +21,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,11 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.coleblvck.shelfSlim.contentManagement.getIconMapVector
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.RemixIcon
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.Design
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.System
@@ -42,10 +43,10 @@ import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Ap
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Dashboard-fill`
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Eye-2-fill`
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Eye-close-fill`
-import com.coleblvck.shelfSlim.state.ActionType
-import com.coleblvck.shelfSlim.state.CustomFunctionToolBox
+import com.coleblvck.shelfSlim.data.tools.ActionType
+import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
 import com.coleblvck.shelfSlim.state.ShelfPagerState
-import com.coleblvck.shelfSlim.state.getActionTypeValue
+import com.coleblvck.shelfSlim.data.tools.getActionTypeValue
 import com.coleblvck.shelfSlim.userInterface.common.ActionIcon
 import com.coleblvck.shelfSlim.userInterface.common.HorizontalSpacer
 import com.coleblvck.shelfSlim.userInterface.common.VerticalSpacer
@@ -60,21 +61,22 @@ import kotlinx.coroutines.launch
 @Composable
 fun Dashboard(
     pagesPagerState: ShelfPagerState,
-    dashIsHorizontal: Boolean,
+    dashIsHorizontal: () -> Boolean,
     flowAnimateToNote: () -> Unit,
     systemUiVisibilityToggle: () -> Unit,
-    isFlowVisible: Boolean,
+    isFlowVisible: State<Boolean>,
     flowVisibilityToggle: () -> Unit,
-    isDashboardVisible: Boolean,
-    customFunctionAction: String,
-    customFunctionIcon: ImageVector,
-    customFunctionParameter: String,
+    isDashboardVisible: State<Boolean>,
+    customFunctionAction: State<String>,
+    customFunctionIcon: State<String>,
+    customFunctionParameter: State<String>,
     customFunctionToolBox: CustomFunctionToolBox,
-    currentDrawerType: String,
+    currentDrawerType: State<String>,
     updateDrawerType: (String) -> Unit,
-    currentDashboardPosition: String,
+    currentDashboardPosition: State<String>,
     updateDashboardPosition: (String) -> Unit
 ) {
+    val isHorizontal = dashIsHorizontal()
     val showDrawerTypeDialog = remember {
         mutableStateOf(false)
     }
@@ -92,7 +94,7 @@ fun Dashboard(
     }
 
     val dashModifier: () -> Modifier = {
-        if (dashIsHorizontal) {
+        if (isHorizontal) {
             Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp)
@@ -100,9 +102,9 @@ fun Dashboard(
                     detectHorizontalDragGestures { _, dragAmount ->
                         if (dragAmount < -50)
                             customFunctionToolBox.executeAction(
-                                getActionTypeValue(customFunctionAction),
+                                getActionTypeValue(customFunctionAction.value),
                                 context,
-                                customFunctionParameter
+                                customFunctionParameter.value
                             )
                     }
                 }
@@ -115,9 +117,9 @@ fun Dashboard(
                     detectVerticalDragGestures { _, dragAmount ->
                         if (dragAmount < -50)
                             customFunctionToolBox.executeAction(
-                                getActionTypeValue(customFunctionAction),
+                                getActionTypeValue(customFunctionAction.value),
                                 context,
-                                customFunctionParameter
+                                customFunctionParameter.value
                             )
                     }
                 }
@@ -125,7 +127,7 @@ fun Dashboard(
     }
 
     val getSpacer: @Composable () -> Unit = {
-        if (dashIsHorizontal) {
+        if (isHorizontal) {
             HorizontalSpacer()
         } else {
             VerticalSpacer()
@@ -134,7 +136,7 @@ fun Dashboard(
 
     val dashContent: @Composable (firstChildModifier: Modifier) -> Unit =
         { firstChildModifier: Modifier ->
-            if (dashIsHorizontal) {
+            if (isHorizontal) {
                 Box(modifier = firstChildModifier) {
                     DashboardClock(
                         color = MaterialTheme.colorScheme.onTertiary,
@@ -154,7 +156,7 @@ fun Dashboard(
             getSpacer()
 
             ActionIcon(
-                vector = if (isFlowVisible) {
+                vector = if (isFlowVisible.value) {
                     RemixIcon.System.`Eye-2-fill`
                 } else {
                     RemixIcon.System.`Eye-close-fill`
@@ -162,15 +164,15 @@ fun Dashboard(
                 action = { flowVisibilityToggle() }
             )
 
-            if (getActionTypeValue(customFunctionAction) != ActionType.NONE) {
+            if (getActionTypeValue(customFunctionAction.value) != ActionType.NONE) {
                 getSpacer()
                 ActionIcon(
-                    vector = customFunctionIcon,
+                    vector = getIconMapVector(customFunctionIcon.value),
                     action = {
                         customFunctionToolBox.executeAction(
-                            getActionTypeValue(customFunctionAction),
+                            getActionTypeValue(customFunctionAction.value),
                             context,
-                            customFunctionParameter
+                            customFunctionParameter.value
                         )
                     },
                     longPressAction = {
@@ -209,7 +211,7 @@ fun Dashboard(
             updateDashboardPosition = updateDashboardPosition,
         )
     }
-    if (isDashboardVisible) {
+    if (isDashboardVisible.value) {
         ElevatedCard(
             modifier = dashModifier().pointerInput(Unit) {
                 detectTapGestures(onDoubleTap = { positionSetDialogVisible.value = true })
@@ -222,7 +224,7 @@ fun Dashboard(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             )
         ) {
-            if (dashIsHorizontal) {
+            if (isHorizontal) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

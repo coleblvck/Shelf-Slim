@@ -7,12 +7,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.LiveData
 import com.coleblvck.shelfSlim.contentManagement.App
 import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.userInterface.desktop.pages.drawer.Drawer
-import com.coleblvck.shelfSlim.userInterface.desktop.pages.drawer.DrawerType
 import com.coleblvck.shelfSlim.userInterface.desktop.pages.gestureBox.GestureBox
 import com.coleblvck.shelfSlim.userInterface.desktop.pages.widgetBox.WidgetBox
 
@@ -22,9 +21,9 @@ import com.coleblvck.shelfSlim.userInterface.desktop.pages.widgetBox.WidgetBox
 fun Pages(
     modifier: Modifier,
     pagesPagerState: ShelfPagerState,
-    drawerApps: LiveData<List<App>>,
-    drawerType: String,
-    drawerSearchText: String,
+    drawerApps: State<List<App>>,
+    drawerType: State<String>,
+    drawerSearchText: State<String>,
     drawerSearchCallback: (String) -> Unit,
     dashboardVisibilityToggle: () -> Unit,
     showWidgetSelectionSheet: () -> Unit

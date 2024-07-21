@@ -21,9 +21,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,25 +31,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coleblvck.shelfSlim.contentManagement.App
 import com.coleblvck.shelfSlim.contentManagement.AppIcon
-import com.coleblvck.shelfSlim.state.ActionType
-import com.coleblvck.shelfSlim.state.getActionTypeValue
+import com.coleblvck.shelfSlim.contentManagement.IconMap
+import com.coleblvck.shelfSlim.contentManagement.getIconMapVector
+import com.coleblvck.shelfSlim.data.tools.ActionType
+import com.coleblvck.shelfSlim.data.tools.getActionTypeValue
 import com.coleblvck.shelfSlim.userInterface.common.DisplayIcon
-import com.coleblvck.shelfSlim.userInterface.common.iconMap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomMappingDialog(
-    currentCustomFunctionIcon: ImageVector,
+    currentCustomFunctionIcon: State<String>,
     updateCustomFunctionIcon: (String) -> Unit,
-    currentCustomFunctionAction: String,
+    currentCustomFunctionAction: State<String>,
     updateCustomFunctionAction: (String) -> Unit,
-    currentCustomFunctionParameter: String,
+    currentCustomFunctionParameter: State<String>,
     updateCustomFunctionParameter: (String) -> Unit,
-    isCustomMappingDialogVisible: Boolean,
+    isCustomMappingDialogVisible: State<Boolean>,
     updateCustomMappingDialogVisibility: (Boolean) -> Unit,
-    allApps: List<App>,
+    allApps: State<List<App>>,
 ) {
-    if (isCustomMappingDialogVisible) {
+    val customVectorImage = getIconMapVector(currentCustomFunctionIcon.value)
+
+    if (isCustomMappingDialogVisible.value) {
         AlertDialog(
             onDismissRequest = {
                 updateCustomMappingDialogVisibility(false)
@@ -87,20 +90,20 @@ fun CustomMappingDialog(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                for (vectorEntry in iconMap.entries) {
+                                for (vectorEntry in IconMap.entries) {
                                     ElevatedCard(
                                         modifier = Modifier.clickable {
                                             updateCustomFunctionIcon(
-                                                vectorEntry.key,
+                                                vectorEntry.name,
                                             )
                                         },
                                         colors = CardDefaults.elevatedCardColors(
-                                            containerColor = if (currentCustomFunctionIcon == vectorEntry.value) {
+                                            containerColor = if (customVectorImage == vectorEntry.vector) {
                                                 MaterialTheme.colorScheme.primary
                                             } else {
                                                 MaterialTheme.colorScheme.background
                                             },
-                                            contentColor = if (currentCustomFunctionIcon == vectorEntry.value) {
+                                            contentColor = if (customVectorImage == vectorEntry.vector) {
                                                 MaterialTheme.colorScheme.onPrimary
                                             } else {
                                                 MaterialTheme.colorScheme.onBackground
@@ -108,7 +111,7 @@ fun CustomMappingDialog(
                                         )
                                     ) {
                                         DisplayIcon(
-                                            vector = vectorEntry.value,
+                                            vector = vectorEntry.vector,
                                             modifier = Modifier
                                                 .size(50.dp)
                                                 .padding(8.dp)
@@ -140,12 +143,12 @@ fun CustomMappingDialog(
                                             )
                                         },
                                     colors = CardDefaults.elevatedCardColors(
-                                        containerColor = if (getActionTypeValue(currentCustomFunctionAction) == ActionType.NONE) {
+                                        containerColor = if (getActionTypeValue(currentCustomFunctionAction.value) == ActionType.NONE) {
                                             MaterialTheme.colorScheme.tertiary
                                         } else {
                                             MaterialTheme.colorScheme.primary
                                         },
-                                        contentColor = if (getActionTypeValue(currentCustomFunctionAction) == ActionType.NONE) {
+                                        contentColor = if (getActionTypeValue(currentCustomFunctionAction.value) == ActionType.NONE) {
                                             MaterialTheme.colorScheme.onTertiary
                                         } else {
                                             MaterialTheme.colorScheme.onPrimary
@@ -182,7 +185,7 @@ fun CustomMappingDialog(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
-                                        for (app: App in allApps) {
+                                        for (app: App in allApps.value) {
                                             ElevatedCard(
                                                 modifier = Modifier.clickable {
                                                     updateCustomFunctionParameter(
@@ -190,12 +193,12 @@ fun CustomMappingDialog(
                                                     )
                                                 },
                                                 colors = CardDefaults.elevatedCardColors(
-                                                    containerColor = if (currentCustomFunctionParameter == app.packageName) {
+                                                    containerColor = if (currentCustomFunctionParameter.value == app.packageName) {
                                                         MaterialTheme.colorScheme.tertiary
                                                     } else {
                                                         MaterialTheme.colorScheme.background
                                                     },
-                                                    contentColor = if (currentCustomFunctionParameter == app.packageName) {
+                                                    contentColor = if (currentCustomFunctionParameter.value == app.packageName) {
                                                         MaterialTheme.colorScheme.onTertiary
                                                     } else {
                                                         MaterialTheme.colorScheme.onBackground

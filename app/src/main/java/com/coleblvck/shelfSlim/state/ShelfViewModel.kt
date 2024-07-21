@@ -8,8 +8,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.coleblvck.shelfSlim.Shelf
+import com.coleblvck.shelfSlim.contentManagement.listeners.Listeners
 import com.coleblvck.shelfSlim.data.Warehouse
 import com.coleblvck.shelfSlim.data.entities.widget.Widget
+import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
 import com.coleblvck.shelfSlim.userInterface.desktop.DesktopState
 import com.coleblvck.shelfSlim.userInterface.widgets.management.AppWidgetData
 import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.widgetTool.WidgetTool
@@ -26,6 +28,11 @@ class ShelfViewModel(
 ) : ViewModel() {
 
     private val utilityToolBox = warehouse.utilityToolBox
+
+    private val widgetTool = WidgetTool(
+            host = shelf.widgetHost,
+    manager = shelf.widgetManager
+    )
 
     val desktopState = DesktopState(utilityToolBox.packageManager)
 
@@ -49,10 +56,7 @@ class ShelfViewModel(
     }
 
 
-    val widgetTool = WidgetTool(
-        host = shelf.widgetHost,
-        manager = shelf.widgetManager
-    )
+
 
     val widgets = warehouse.repositories.widgets.getWidgets()
     private val initialWidgetsObserver: Observer<List<Widget>> = Observer {

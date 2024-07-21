@@ -13,20 +13,7 @@ import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Ey
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Eye-close-fill`
 
 
-val hintContent: (dashPosition: String, dashIsHorizontal: Boolean, currentActionIcon: ImageVector) -> List<List<Any>> = {
-    dashPosition: String, dashIsHorizontal: Boolean, currentActionIcon: ImageVector ->
-
-    val dashboardPosition: () -> String = {
-        dashPosition.lowercase()
-    }
-
-    val dashboardSwipeDirection: () -> String = {
-        if (dashIsHorizontal) {
-            "left"
-        } else {
-            "up"
-        }
-    }
+fun hintContent(dashboardPosition: String, dashIsHorizontal: Boolean, dashboardSwipeDirection: String, currentActionIcon: ImageVector): List<List<Any>>  {
 
     val list: List<List<Any>> =
         listOf(
@@ -37,19 +24,19 @@ val hintContent: (dashPosition: String, dashIsHorizontal: Boolean, currentAction
             listOf(
                 "- Long Press on ",
                 currentActionIcon,
-                " to re-map its function. If not visible, swipe ${dashboardSwipeDirection()} on the ${dashboardPosition()} dashboard."
+                " to re-map its function. If not visible, swipe $dashboardSwipeDirection on the $dashboardPosition dashboard."
             ),
             listOf(
                 "- Tap on ",
                 currentActionIcon,
-                " or swipe ${dashboardSwipeDirection()} on the ${dashboardPosition()} dashboard to run custom action.",
-                " Swipe ${dashboardSwipeDirection()} on dashboard to re-map if disabled."
+                " or swipe $dashboardSwipeDirection on the $dashboardPosition dashboard to run custom action.",
+                " Swipe $dashboardSwipeDirection on dashboard to re-map if disabled."
             ),
             listOf(
                 "- Long Press on an app to uninstall it or to open its settings page."
             ),
             listOf(
-                "- Double Tap an empty space on the ${dashboardPosition()} dashboard to change its position.",
+                "- Double Tap an empty space on the $dashboardPosition dashboard to change its position.",
                 " The dashboard clock is currently not available in the vertical dashboard positions."
             ),
             listOf(
@@ -93,9 +80,9 @@ val hintContent: (dashPosition: String, dashIsHorizontal: Boolean, currentAction
                 " to change the App Drawer layout."
             ),
             listOf(
-                "- Double Tap on empty desktop space to show/hide ${dashboardPosition()} dashboard."
+                "- Double Tap on empty desktop space to show/hide $dashboardPosition dashboard."
             ),
         )
 
-    list
+    return list
 }
