@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.PagerState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.coleblvck.shelfSlim.Shelf
 import com.coleblvck.shelfSlim.contentManagement.listeners.Listeners
@@ -12,6 +11,9 @@ import com.coleblvck.shelfSlim.data.Warehouse
 import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
 import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
 import com.coleblvck.shelfSlim.userInterface.desktop.DesktopState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ShelfViewModel(
@@ -31,20 +33,22 @@ class ShelfViewModel(
     @OptIn(ExperimentalFoundationApi::class)
     val flowPagerState = ShelfPagerState(pageCount = 2, initialPage = 0)
 
-    val widgetToolBox: WidgetToolBox = WidgetToolBox(warehouse.repositories.widgets, warehouse.utilityToolBox)
-
+    val widgetToolBox: WidgetToolBox =
+        WidgetToolBox(warehouse.repositories.widgets, warehouse.utilityToolBox)
 
 
     val updateShelfContent: () -> Unit = {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             desktopState.appListToolBox.fetch()
+            widgetToolBox.getAllWidgetPreviewData()
         }
     }
 
     private val listeners: Listeners = Listeners(updateShelfContent)
 
     init {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
+            delay(1000L)
             updateShelfContent()
         }
         listeners.register(shelf)

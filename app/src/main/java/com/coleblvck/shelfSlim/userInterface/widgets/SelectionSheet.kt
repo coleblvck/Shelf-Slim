@@ -3,7 +3,6 @@ package com.coleblvck.shelfSlim.userInterface.widgets
 import android.app.Activity
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -32,14 +31,11 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
-import com.coleblvck.shelfSlim.state.LocalWidgetTool
-import com.coleblvck.shelfSlim.userInterface.widgets.management.AppWidgetData
 import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.IntentExtraName
 import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.WidgetSelectionActivity
 
@@ -52,42 +48,15 @@ fun WidgetSelectionSheet(
     onDismiss: () -> Unit,
     sheetState: SheetState,
 ) {
-    val density = LocalDensity.current
     val context = LocalContext.current
-    val widgetTool = LocalWidgetTool.current
-    val widgetPreviews = widgetTool.getAllPreviewData(context.applicationContext, density)
-    val packageManager = context.packageManager
+    val widgetPreviews = widgetToolBox.widgetPreviews
     val startForResult =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val intent = result.data
                 if (intent != null) {
                     val intentWidgetId = intent.getIntExtra(IntentExtraName.WIDGET_ID_EXTRA, -1)
-                    val intentProviderInfo =
-                        intent.getParcelableExtra<AppWidgetProviderInfo>(IntentExtraName.PROVIDER_INFO_EXTRA)!!
-                    val widgetData = AppWidgetData(
-                        appName = packageManager.getApplicationInfo(
-                            intentProviderInfo.provider.packageName,
-                            PackageManager.GET_META_DATA
-                        ).loadLabel(packageManager).toString(),
-                        widgetLabel = intentProviderInfo.loadLabel(packageManager),
-                        providerInfo = intentProviderInfo,
-                        appWidgetId = intentWidgetId,
-                        icon = widgetTool.getWidgetIcon(
-                            context.applicationContext,
-                            intentProviderInfo,
-                            1
-                        ),
-                        previewImage = widgetTool.getWidgetPreviewDrawable(
-                            context.applicationContext,
-                            intentProviderInfo,
-                            1
-                        ),
-                        isPreview = false,
-                        positionalIndex = widgetToolBox.userWidgets.value.size,
-                        verticalWeight = 2f
-                    )
-                    widgetToolBox.addUserWidget(widgetData)
+                    widgetToolBox.newWidgetAddition(intentWidgetId)
                 }
             }
         }
@@ -168,18 +137,17 @@ fun WidgetSelectionSheet(
                         )
                     }
                     items(
-                        widgetPreviews,
+                        widgetPreviews.value,
                         key = { it.providerInfo.provider.className },
                         itemContent = {
-                            WidgetView(
+                            WidgetPreview(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
                                         initiateWidgetAdd(it.providerInfo)
                                         onDismiss()
                                     },
-                                widgetToolBox = widgetToolBox,
-                                appWidgetData = it
+                                appWidgetPreviewData = it
                             )
                         }
                     )

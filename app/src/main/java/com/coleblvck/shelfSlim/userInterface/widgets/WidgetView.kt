@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
@@ -35,13 +34,11 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.children
 import androidx.core.view.setPadding
-import coil.compose.AsyncImage
 import com.coleblvck.shelfSlim.contentManagement.AppIcon
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.RemixIcon
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.Design
@@ -71,7 +68,7 @@ fun WidgetView(
 
      */
 
-    if (appWidgetData.isPreview || isEditPreview) {
+    if (isEditPreview) {
         ElevatedCard(
             modifier = modifier,
             colors = CardDefaults.cardColors(
@@ -125,46 +122,30 @@ fun WidgetView(
                                 }
                             }
                         )
-                        if (isEditPreview) {
-                            val editDialogVisible = remember {
-                                mutableStateOf(false)
-                            }
-                            if (editDialogVisible.value) {
-                                WidgetEditDialog(
-                                    widgetData = appWidgetData,
-                                    widgetToolBox = widgetToolBox,
-                                    onDismiss = { editDialogVisible.value = false }
-                                )
-                            }
-                            ActionIcon(
-                                vector = RemixIcon.Design.`Pencil-fill`,
-                                action = { editDialogVisible.value = true })
-                            ActionIcon(
-                                vector = RemixIcon.System.`Delete-bin-3-fill`,
-                                action = {
-                                    widgetToolBox.removeUserWidget(
-                                        appWidgetData.appWidgetId
-                                    )
-                                }
-                            )
-                            HorizontalSpacer()
+                        val editDialogVisible = remember {
+                            mutableStateOf(false)
                         }
-                    }
-                }
-                if (appWidgetData.previewImage != null && !isEditPreview) {
-                    AsyncImage(
-                        model = appWidgetData.previewImage,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .height(
-                                appWidgetData.providerInfo.minHeight.dp.coerceIn(
-                                    60.dp,
-                                    200.dp
+                        if (editDialogVisible.value) {
+                            WidgetEditDialog(
+                                widgetData = appWidgetData,
+                                widgetToolBox = widgetToolBox,
+                                onDismiss = { editDialogVisible.value = false }
+                            )
+                        }
+                        ActionIcon(
+                            vector = RemixIcon.Design.`Pencil-fill`,
+                            action = { editDialogVisible.value = true })
+                        ActionIcon(
+                            vector = RemixIcon.System.`Delete-bin-3-fill`,
+                            action = {
+                                widgetToolBox.removeUserWidget(
+                                    appWidgetData.appWidgetId
                                 )
-                            ),
-                        contentDescription = ""
-                    )
+                            }
+                        )
+                        HorizontalSpacer()
+
+                    }
                 }
             }
         }
@@ -178,17 +159,17 @@ fun WidgetView(
                     .clip(
                         shape = RoundedCornerShape(corner = CornerSize(8.dp)),
                     ),
-                    /*
-                    // For Widgets that do not occupy all available space
-                    .onGloballyPositioned { coordinates ->
+                /*
+                // For Widgets that do not occupy all available space
+                .onGloballyPositioned { coordinates ->
 
-                        size.value = coordinates.size.toSize()
-                    }
-                    .onSizeChanged { intSize ->
-                        size.value = intSize.toSize()
-                    },
+                    size.value = coordinates.size.toSize()
+                }
+                .onSizeChanged { intSize ->
+                    size.value = intSize.toSize()
+                },
 
-                     */
+                 */
                 factory = {
                     val widgetView = widgetTool.host.createView(
                         it.applicationContext,

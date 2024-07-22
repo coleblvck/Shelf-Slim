@@ -6,11 +6,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
-import androidx.compose.ui.unit.Density
-import com.coleblvck.shelfSlim.userInterface.widgets.management.AppWidgetData
-import kotlin.math.roundToInt
 
 
 const val APP_WIDGET_HOST_ID = 23456
@@ -23,53 +18,6 @@ val Context.widgetManager: AppWidgetManager get() = AppWidgetManager.getInstance
 
 
 class WidgetTool(val host: AppWidgetHost, val manager: AppWidgetManager) {
-
-    val providerInfos: () -> List<AppWidgetProviderInfo> =
-        {
-            manager.installedProviders
-        }
-
-    val getAllPreviewData: (applicationContext: Context, density: Density) -> List<AppWidgetData> =
-        { applicationContext: Context, density: Density ->
-            val dataList = ArrayList<AppWidgetData>()
-            val imageDensity = (100f * density.density).roundToInt()
-            val packageManager = applicationContext.packageManager
-            for (providerInfo in providerInfos()) {
-                val thisPreviewData = AppWidgetData(
-                    appName = packageManager.getApplicationInfo(
-                        providerInfo.provider.packageName,
-                        PackageManager.GET_META_DATA
-                    ).loadLabel(packageManager).toString(),
-                    widgetLabel = providerInfo.loadLabel(packageManager),
-                    providerInfo = providerInfo,
-                    appWidgetId = -1,
-                    icon = getWidgetIcon(applicationContext, providerInfo, imageDensity),
-                    previewImage = getWidgetPreviewDrawable(
-                        applicationContext,
-                        providerInfo,
-                        imageDensity
-                    ),
-                    isPreview = true,
-                    positionalIndex = -1,
-                    verticalWeight = 0f
-                )
-                dataList.add(thisPreviewData)
-            }
-            dataList
-        }
-
-    val getWidgetIcon: (applicationContext: Context, providerInfo: AppWidgetProviderInfo, density: Int) -> Drawable? =
-        { applicationContext: Context, providerInfo: AppWidgetProviderInfo, density: Int ->
-            val icon: Drawable? = providerInfo.loadIcon(applicationContext, density)
-            icon
-        }
-
-    val getWidgetPreviewDrawable: (applicationContext: Context, providerInfo: AppWidgetProviderInfo, density: Int) -> Drawable? =
-        { applicationContext: Context, providerInfo: AppWidgetProviderInfo, density: Int ->
-            val previewDrawable: Drawable? =
-                providerInfo.loadPreviewImage(applicationContext, density)
-            previewDrawable
-        }
 
     val attemptBind: (providerInfo: AppWidgetProviderInfo) -> Pair<Boolean, Int> =
         { providerInfo: AppWidgetProviderInfo ->

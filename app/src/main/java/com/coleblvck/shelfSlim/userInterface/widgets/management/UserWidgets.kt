@@ -16,6 +16,14 @@ class UserWidgetsState {
     }
 }
 
+data class AppWidgetPreviewData(
+    val providerInfo: AppWidgetProviderInfo,
+    val appName: String,
+    val widgetLabel: String,
+    val icon: Drawable?,
+    val previewImage: Drawable?,
+)
+
 data class AppWidgetData(
     val appWidgetId: Int,
     var positionalIndex: Int,
@@ -23,7 +31,5 @@ data class AppWidgetData(
     val appName: String,
     val widgetLabel: String,
     val icon: Drawable? = null,
-    val previewImage: Drawable? = null,
-    val isPreview: Boolean,
     var verticalWeight: Float
 )
