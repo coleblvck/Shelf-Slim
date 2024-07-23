@@ -8,11 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
@@ -24,41 +24,34 @@ import com.coleblvck.shelfSlim.userInterface.theme.colorWithAlpha
 fun Grid(
     drawerApps: State<List<App>>,
     state: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
-    contentPadding: PaddingValues = PaddingValues(12.dp)
+    contentPadding: PaddingValues = PaddingValues(8.dp)
 ) {
-    Card(
+    Surface(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 12.dp),
 
-        colors = CardDefaults.cardColors(
-            colorWithAlpha(MaterialTheme.colorScheme.background),
-            MaterialTheme.colorScheme.onBackground,
-            MaterialTheme.colorScheme.background,
-            MaterialTheme.colorScheme.onBackground,
-        ),
+        color = colorWithAlpha(MaterialTheme.colorScheme.background),
+        shape = RoundedCornerShape(12.dp)
     ) {
         LazyVerticalStaggeredGrid(
             modifier = Modifier.fillMaxSize(),
             state = state,
             columns = StaggeredGridCells.Adaptive(60.dp),
             contentPadding = contentPadding,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalItemSpacing = 4.dp,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalItemSpacing = 8.dp,
             flingBehavior = ScrollableDefaults.flingBehavior(),
         ) {
-            itemsIndexed(
-                items = drawerApps.value,
-                key = { index, app -> "$index - ${app.packageName}" },
-                contentType = { _, _ -> "App" }
-            ) { _, app ->
+            items(
+                drawerApps.value,
+                key = { "${it.packageName}${it.activityName}" }
+            ) { app ->
                 DrawerAppItem(
                     app = app,
                     appCardType = AppCardType.BOX
                 )
-
             }
-
         }
     }
 }

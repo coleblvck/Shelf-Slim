@@ -4,7 +4,6 @@ import android.graphics.Typeface
 import android.os.Build
 import android.widget.TextClock
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -45,8 +45,8 @@ import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Ey
 import com.coleblvck.shelfSlim.contentManagement.remixIcons.remixicon.system.`Eye-close-fill`
 import com.coleblvck.shelfSlim.data.tools.ActionType
 import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
-import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.data.tools.getActionTypeValue
+import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.userInterface.common.ActionIcon
 import com.coleblvck.shelfSlim.userInterface.common.HorizontalSpacer
 import com.coleblvck.shelfSlim.userInterface.common.VerticalSpacer
@@ -57,11 +57,10 @@ import kotlinx.coroutines.launch
 
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Dashboard(
     pagesPagerState: ShelfPagerState,
-    dashIsHorizontal: () -> Boolean,
+    dashboardIsHorizontal: State<Boolean>,
     flowAnimateToNote: () -> Unit,
     systemUiVisibilityToggle: () -> Unit,
     isFlowVisible: State<Boolean>,
@@ -74,9 +73,8 @@ fun Dashboard(
     currentDrawerType: State<String>,
     updateDrawerType: (String) -> Unit,
     currentDashboardPosition: State<String>,
-    updateDashboardPosition: (String) -> Unit
+    updateDashboardPosition: (String) -> Unit,
 ) {
-    val isHorizontal = dashIsHorizontal()
     val showDrawerTypeDialog = remember {
         mutableStateOf(false)
     }
@@ -94,7 +92,7 @@ fun Dashboard(
     }
 
     val dashModifier: () -> Modifier = {
-        if (isHorizontal) {
+        if (dashboardIsHorizontal.value) {
             Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp)
@@ -127,7 +125,7 @@ fun Dashboard(
     }
 
     val getSpacer: @Composable () -> Unit = {
-        if (isHorizontal) {
+        if (dashboardIsHorizontal.value) {
             HorizontalSpacer()
         } else {
             VerticalSpacer()
@@ -136,7 +134,7 @@ fun Dashboard(
 
     val dashContent: @Composable (firstChildModifier: Modifier) -> Unit =
         { firstChildModifier: Modifier ->
-            if (isHorizontal) {
+            if (dashboardIsHorizontal.value) {
                 Box(modifier = firstChildModifier) {
                     DashboardClock(
                         color = MaterialTheme.colorScheme.onTertiary,
@@ -212,7 +210,7 @@ fun Dashboard(
         )
     }
     if (isDashboardVisible.value) {
-        ElevatedCard(
+        Card(
             modifier = dashModifier().pointerInput(Unit) {
                 detectTapGestures(onDoubleTap = { positionSetDialogVisible.value = true })
             },
@@ -224,7 +222,7 @@ fun Dashboard(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
             )
         ) {
-            if (isHorizontal) {
+            if (dashboardIsHorizontal.value) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

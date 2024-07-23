@@ -1,5 +1,6 @@
 package com.coleblvck.shelfSlim.state
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -12,6 +13,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.coleblvck.shelfSlim.data.Warehouse
 import com.coleblvck.shelfSlim.data.userPreferences.UserPreferences
 import com.coleblvck.shelfSlim.data.userPreferences.UserPreferencesToolBox
+import com.coleblvck.shelfSlim.userInterface.desktop.dashboard.DashboardPosition
+import com.coleblvck.shelfSlim.userInterface.desktop.dashboard.getDashboardPosition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -22,8 +25,8 @@ class UserPreferencesViewModel(val store: DataStore<Preferences>, val warehouse:
         flowNote = mutableStateOf(""),
         headerHeading = mutableStateOf("Welcome"),
         headerSubHeading = mutableStateOf("Double Tap"),
-        flowVisible = mutableStateOf(true),
-        dashboardVisible = mutableStateOf(true),
+        flowIsVisible = mutableStateOf(true),
+        dashboardIsVisible = mutableStateOf(true),
         drawerType = mutableStateOf("GRID"),
         customFunctionIcon = mutableStateOf("PULSE"),
         customFunctionPackage = mutableStateOf(""),
@@ -46,8 +49,8 @@ class UserPreferencesViewModel(val store: DataStore<Preferences>, val warehouse:
             userPreferences.flowNote.value = getTextFromRepo("flowNote", userPreferences.flowNote.value)
             userPreferences.headerHeading.value = getTextFromRepo("headerHeading", userPreferences.headerHeading.value)
             userPreferences.headerSubHeading.value = getTextFromRepo("headerSubHeading", userPreferences.headerSubHeading.value)
-            userPreferences.flowVisible.value = preferences[PreferenceKeys.FLOW_VISIBILITY] ?: userPreferences.flowVisible.value
-            userPreferences.dashboardVisible.value = preferences[PreferenceKeys.DASHBOARD_VISIBILITY] ?: userPreferences.dashboardVisible.value
+            userPreferences.flowIsVisible.value = preferences[PreferenceKeys.FLOW_VISIBILITY] ?: userPreferences.flowIsVisible.value
+            userPreferences.dashboardIsVisible.value = preferences[PreferenceKeys.DASHBOARD_VISIBILITY] ?: userPreferences.dashboardIsVisible.value
             userPreferences.drawerType.value = preferences[PreferenceKeys.DRAWER_TYPE] ?: userPreferences.drawerType.value
             userPreferences.customFunctionIcon.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_ICON] ?: userPreferences.customFunctionIcon.value
             userPreferences.customFunctionPackage.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_PACKAGE] ?: userPreferences.customFunctionPackage.value

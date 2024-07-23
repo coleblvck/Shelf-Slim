@@ -8,5 +8,6 @@ import androidx.room.PrimaryKey
 data class Widget (
     @ColumnInfo(name = "id") @PrimaryKey val id: Int,
     @ColumnInfo(name = "positionalIndex") val positionalIndex: Int,
-    @ColumnInfo(name = "verticalWeight") val verticalWeight: Float
+    @ColumnInfo(name = "width") val width: Int,
+    @ColumnInfo(name = "height") val height: Int,
 )

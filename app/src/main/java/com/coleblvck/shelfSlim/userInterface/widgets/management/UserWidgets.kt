@@ -31,5 +31,6 @@ data class AppWidgetData(
     val appName: String,
     val widgetLabel: String,
     val icon: Drawable? = null,
-    var verticalWeight: Float
+    var width: Int,
+    var height: Int
 )

@@ -11,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.view.WindowInsetsControllerCompat
 import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
 import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
@@ -20,8 +19,6 @@ import com.coleblvck.shelfSlim.data.userPreferences.UserPreferencesToolBox
 import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.userInterface.desktop.Desktop
 import com.coleblvck.shelfSlim.userInterface.desktop.DesktopState
-import com.coleblvck.shelfSlim.userInterface.desktop.dashboard.DashboardPosition
-import com.coleblvck.shelfSlim.userInterface.desktop.dashboard.getDashboardPosition
 import com.coleblvck.shelfSlim.userInterface.desktop.hint.HintDialog
 import com.coleblvck.shelfSlim.userInterface.misc.CustomMappingDialog
 import com.coleblvck.shelfSlim.userInterface.widgets.WidgetSelectionSheet
@@ -50,8 +47,6 @@ fun ShelfLauncher(
     systemUiController.isSystemBarsVisible = desktopState.isSystemUiVisible.value
     systemUiController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 
-    val configuration = LocalConfiguration.current
-
     val widgetSelectionSheetState = rememberModalBottomSheetState()
 
     val coroutineScope = rememberCoroutineScope()
@@ -72,7 +67,7 @@ fun ShelfLauncher(
     }
 
     val animateToFlowNote: () -> Unit = {
-        if (!userPreferences.flowVisible.value) {
+        if (!userPreferences.flowIsVisible.value) {
             userPreferencesToolBox.updateFlowVisibility(true)
         }
         if (flowPagerState.currentPage != 1) {
@@ -82,18 +77,12 @@ fun ShelfLauncher(
         }
     }
 
-    val dashIsHorizontal = {
-        val dashPosition = getDashboardPosition(userPreferences.dashboardPosition.value)
-        dashPosition == DashboardPosition.BOTTOM || dashPosition == DashboardPosition.TOP
-    }
-
     val flowHeaderEditDialogVisible = remember {
         mutableStateOf(false)
     }
 
     Desktop(
-        orientation = configuration.orientation,
-        isFlowVisible = userPreferences.flowVisible,
+        isFlowVisible = userPreferences.flowIsVisible,
         flowVisibilityToggle = { coroutineScope.launch { userPreferencesToolBox.toggleFlowVisibility() } },
         flowPagerState = flowPagerState,
         flowHeaderHeading = userPreferences.headerHeading,
@@ -112,10 +101,10 @@ fun ShelfLauncher(
         updateDrawerType = userPreferencesToolBox::updateDrawerType,
         drawerSearchText = desktopState.appListToolBox.searchText,
         drawerSearchCallback = desktopState.appListToolBox.search,
-        dashIsHorizontal = dashIsHorizontal,
+        dashboardIsHorizontal = userPreferences.dashboardIsHorizontal,
         currentDashboardPosition = userPreferences.dashboardPosition,
         updateDashboardPosition = userPreferencesToolBox::updateDashboardPosition,
-        isDashboardVisible = userPreferences.dashboardVisible,
+        isDashboardVisible = userPreferences.dashboardIsVisible,
         dashboardVisibilityToggle = userPreferencesToolBox::toggleDashboardVisibility,
         customFunctionAction = userPreferences.customFunctionAction,
         customFunctionIcon = userPreferences.customFunctionIcon,
@@ -149,7 +138,7 @@ fun ShelfLauncher(
     HintDialog(
         isHintVisible = desktopState.isHintVisible.value,
         updateHintVisibility = desktopState.updateHintVisibility,
-        dashIsHorizontal = dashIsHorizontal,
+        dashboardIsHorizontal = userPreferences.dashboardIsHorizontal,
         dashboardPosition = userPreferences.dashboardPosition,
         currentCustomFunctionIcon = userPreferences.customFunctionIcon
     )

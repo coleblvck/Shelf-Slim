@@ -48,8 +48,8 @@ fun WidgetPreview(
             ElevatedCard(
                 modifier = Modifier.height(50.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
                 )
             ) {
                 Row(

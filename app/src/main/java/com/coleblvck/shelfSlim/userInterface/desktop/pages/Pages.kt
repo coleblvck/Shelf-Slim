@@ -54,7 +54,7 @@ fun Pages(
 
             2 -> WidgetBox(
                 widgetToolBox = widgetToolBox,
-                showWidgetSelectionSheet = showWidgetSelectionSheet
+                showWidgetSelectionSheet = showWidgetSelectionSheet,
             )
 
         }

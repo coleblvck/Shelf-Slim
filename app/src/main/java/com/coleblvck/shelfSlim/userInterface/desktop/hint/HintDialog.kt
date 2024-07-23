@@ -15,12 +15,12 @@ import com.coleblvck.shelfSlim.userInterface.common.cards.DialogColumnCard
 fun HintDialog(
     isHintVisible: Boolean,
     updateHintVisibility: (Boolean) -> Unit,
-    dashIsHorizontal: () -> Boolean,
+    dashboardIsHorizontal: State<Boolean>,
     dashboardPosition: State<String>,
     currentCustomFunctionIcon: State<String>
 ) {
     val dashboardSwipeDirection: () -> String = {
-        if (dashIsHorizontal()) {
+        if (dashboardIsHorizontal.value) {
             "left"
         } else {
             "up"
@@ -28,7 +28,7 @@ fun HintDialog(
     }
     val hintContent = hintContent(
         dashboardPosition = dashboardPosition.value.lowercase(),
-        dashIsHorizontal = dashIsHorizontal(),
+        dashIsHorizontal = dashboardIsHorizontal.value,
         dashboardSwipeDirection = dashboardSwipeDirection(),
         currentActionIcon = getIconMapVector(currentCustomFunctionIcon.value)
     )

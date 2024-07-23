@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -90,40 +89,6 @@ fun WidgetSelectionSheet(
                     state = rememberLazyListState(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    if (widgetToolBox.userWidgets.value.isNotEmpty()) {
-                        item {
-                            Text(
-                                color = MaterialTheme.colorScheme.onTertiary,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight(align = Alignment.CenterVertically),
-                                textAlign = TextAlign.Center,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight(500),
-                                text = "Current Widgets",
-                            )
-                        }
-                        items(
-                            widgetToolBox.userWidgets.value,
-                            key = { it.appWidgetId },
-                            itemContent = {
-                                WidgetView(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    appWidgetData = it,
-                                    isEditPreview = true,
-                                    widgetToolBox = widgetToolBox
-                                )
-                            }
-                        )
-                        item {
-                            Divider(
-                                thickness = 10.dp,
-                                color = MaterialTheme.colorScheme.onTertiary
-                            )
-                        }
-
-                    }
                     item {
                         Text(
                             color = MaterialTheme.colorScheme.onTertiary,

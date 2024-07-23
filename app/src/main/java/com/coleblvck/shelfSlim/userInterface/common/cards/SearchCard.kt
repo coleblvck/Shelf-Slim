@@ -51,9 +51,9 @@ fun SearchCard(
         ),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp),
+            modifier = Modifier.padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Icon(
                 RemixIcon.System.`Search-2-fill`,
@@ -66,7 +66,6 @@ fun SearchCard(
                 onValueChange = searchCallback,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
                     .weight(1f),
                 visualTransformation = VisualTransformation.None,
                 singleLine = true,

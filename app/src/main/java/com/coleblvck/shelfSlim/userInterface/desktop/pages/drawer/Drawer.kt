@@ -17,7 +17,6 @@ val getDrawerType: (String) -> DrawerType = {
 }
 
 
-
 @Composable
 fun Drawer(
     drawerApps: State<List<App>>,
@@ -46,5 +45,4 @@ fun Drawer(
             }
         }
     }
-
 }

@@ -44,6 +44,7 @@ class AppListToolBox(private val packageManager: PackageManager) {
                 val app = App(
                     name = appInfo.loadLabel(packageManager).toString(),
                     packageName = appInfo.activityInfo.packageName,
+                    activityName = appInfo.activityInfo.name,
                     icon = appInfo.activityInfo.loadIcon(packageManager)
                 )
                 userAppList.add(app)

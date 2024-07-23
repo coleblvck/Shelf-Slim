@@ -13,7 +13,6 @@ import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
 import com.coleblvck.shelfSlim.userInterface.desktop.DesktopState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ShelfViewModel(
@@ -47,10 +46,7 @@ class ShelfViewModel(
     private val listeners: Listeners = Listeners(updateShelfContent)
 
     init {
-        CoroutineScope(Dispatchers.IO).launch {
-            delay(1000L)
-            updateShelfContent()
-        }
+        updateShelfContent()
         listeners.register(shelf)
     }
 

@@ -27,11 +27,11 @@ class UserPreferencesToolBox(
 ) {
 
     fun toggleFlowVisibility() {
-        updateFlowVisibility(!preferences.flowVisible.value)
+        updateFlowVisibility(!preferences.flowIsVisible.value)
     }
 
     fun toggleDashboardVisibility() {
-        updateDashboardVisibility(!preferences.dashboardVisible.value)
+        updateDashboardVisibility(!preferences.dashboardIsVisible.value)
     }
 
     /*
@@ -69,12 +69,12 @@ class UserPreferencesToolBox(
     }
 
     fun updateFlowVisibility(value: Boolean) {
-        preferences.flowVisible.value = value
+        preferences.flowIsVisible.value = value
         saveBoolean(PreferenceKeys.FLOW_VISIBILITY, value)
     }
 
     fun updateDashboardVisibility(value: Boolean) {
-        preferences.dashboardVisible.value = value
+        preferences.dashboardIsVisible.value = value
         saveBoolean(PreferenceKeys.DASHBOARD_VISIBILITY, value)
     }
 

@@ -13,8 +13,8 @@ android {
         applicationId = "com.coleblvck.shelfSlim"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.0.0-alpha02"
+        versionCode = 3
+        versionName = "1.0.0-alpha03"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -72,5 +72,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.material)
 
 }

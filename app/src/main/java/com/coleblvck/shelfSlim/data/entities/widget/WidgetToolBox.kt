@@ -25,6 +25,13 @@ class WidgetToolBox(private val localWidgetRepository: LocalWidgetRepository, ut
     private val displayDensity = shelf.resources.displayMetrics.density
     private val imageDensity = (100f * displayDensity).roundToInt()
 
+    private val _widgetsEditModeEnabled: MutableState<Boolean> = mutableStateOf(false)
+    val widgetsEditModeEnabled: State<Boolean> get() = _widgetsEditModeEnabled
+
+    fun updateWidgetsEditMode(value: Boolean) {
+        _widgetsEditModeEnabled.value = value
+    }
+
     private val _widgetPageScrollEnabled: MutableState<Boolean> = mutableStateOf(true)
     val widgetPageScrollEnabled: State<Boolean> get() = _widgetPageScrollEnabled
 
@@ -47,16 +54,12 @@ class WidgetToolBox(private val localWidgetRepository: LocalWidgetRepository, ut
         return Widget(
             id = appWidgetData.appWidgetId,
             positionalIndex = appWidgetData.positionalIndex,
-            verticalWeight = appWidgetData.verticalWeight
+            width = appWidgetData.width,
+            height = appWidgetData.height
         )
     }
 
 
-
-
-    private fun addUserWidget(appWidgetData: AppWidgetData) {
-        saveAppWidgetData(appWidgetData)
-    }
 
     private fun updateAllAppWidgetData(widgetList: List<Widget>) {
         val allAppWidgetData: MutableList<AppWidgetData> = mutableListOf()
@@ -73,7 +76,8 @@ class WidgetToolBox(private val localWidgetRepository: LocalWidgetRepository, ut
                 widgetLabel = providerInfo.loadLabel(packageManager),
                 icon = providerInfo.loadIcon(shelf, imageDensity),
                 positionalIndex = widget.positionalIndex,
-                verticalWeight = widget.verticalWeight
+                width = widget.width,
+                height = widget.height
 
             )
             allAppWidgetData.add(appWidgetData)
@@ -109,8 +113,17 @@ class WidgetToolBox(private val localWidgetRepository: LocalWidgetRepository, ut
         }
     }
 
-    fun updateUserWidgetWeight(widgetData: AppWidgetData, value: Float) {
-        widgetData.verticalWeight = 1/value
+    fun updateUserWidgetWidth(widgetData: AppWidgetData, value: Int) {
+        widgetData.width = value
+        saveAppWidgetData(widgetData)
+    }
+
+    fun updateUserWidgetHeight(widgetData: AppWidgetData, value: Int) {
+        var height  = value
+        if (height < 80) {
+            height = 80
+        }
+        widgetData.height = height
         saveAppWidgetData(widgetData)
     }
 
@@ -151,9 +164,13 @@ class WidgetToolBox(private val localWidgetRepository: LocalWidgetRepository, ut
             appWidgetId = id,
             icon = providerInfo.loadIcon(shelf, imageDensity),
             positionalIndex = userWidgets.value.size,
-            verticalWeight = 2f
+            width = 50,
+            height = 200
         )
-        addUserWidget(widgetData)
+        _userWidgets.value = userWidgets.value.toMutableList().apply { add(userWidgets.value.size, widgetData) }
+        for (widgetDataItem in userWidgets.value) {
+            saveAppWidgetData(widgetDataItem)
+        }
     }
 
     init {

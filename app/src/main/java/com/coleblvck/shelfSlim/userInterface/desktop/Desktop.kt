@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.coleblvck.shelfSlim.contentManagement.App
 import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
@@ -27,7 +28,6 @@ import com.coleblvck.shelfSlim.userInterface.desktop.pages.Pages
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Desktop(
-    orientation: Int,
     isFlowVisible: State<Boolean>,
     flowVisibilityToggle: () -> Unit,
     flowPagerState: ShelfPagerState,
@@ -47,7 +47,7 @@ fun Desktop(
     updateDrawerType: (String) -> Unit,
     drawerSearchText: State<String>,
     drawerSearchCallback: (String) -> Unit,
-    dashIsHorizontal: () -> Boolean,
+    dashboardIsHorizontal: State<Boolean>,
     currentDashboardPosition: State<String>,
     updateDashboardPosition: (String) -> Unit,
     isDashboardVisible: State<Boolean>,
@@ -60,6 +60,8 @@ fun Desktop(
     systemUiVisibilityToggle: () -> Unit,
     widgetToolBox: WidgetToolBox,
 ) {
+    val configuration = LocalConfiguration.current
+    val orientation = configuration.orientation
     val flow: @Composable (modifier: Modifier) -> Unit = { modifier: Modifier ->
         Flow(
             modifier = modifier,
@@ -92,7 +94,7 @@ fun Desktop(
     val dashboard: @Composable () -> Unit = {
         Dashboard(
             pagesPagerState = pagesPagerState,
-            dashIsHorizontal = dashIsHorizontal,
+            dashboardIsHorizontal = dashboardIsHorizontal,
             flowAnimateToNote = flowAnimateToNote,
             systemUiVisibilityToggle = systemUiVisibilityToggle,
             isFlowVisible = isFlowVisible,
@@ -125,7 +127,8 @@ fun Desktop(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     flow(Modifier.weight(1f))
                     pages(Modifier.weight(1f))
@@ -172,7 +175,7 @@ fun Desktop(
             }
         }
     }
-    if (dashIsHorizontal()) {
+    if (dashboardIsHorizontal.value) {
         horizontalDashDesktop()
     } else {
         verticalDashDesktop()
