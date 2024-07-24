@@ -1,6 +1,7 @@
 package com.coleblvck.shelfSlim.data.userPreferences
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -9,10 +10,10 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.coleblvck.shelfSlim.data.Warehouse
 import com.coleblvck.shelfSlim.data.entities.text.Text
-import com.coleblvck.shelfSlim.data.tools.ActionType
-import kotlinx.coroutines.DelicateCoroutinesApi
+import com.coleblvck.shelfSlim.state.stateTools.customDashboardAction.ActionType
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 
@@ -22,16 +23,29 @@ val Context.shelfDataStore by preferencesDataStore(name = USER_PREFERENCES_KEY)
 
 class UserPreferencesToolBox(
     private val store: DataStore<Preferences>,
-    private val preferences: UserPreferences,
     private val warehouse: Warehouse,
 ) {
 
+    val userPreferences = UserPreferences(
+        flowNote = mutableStateOf(""),
+        headerHeading = mutableStateOf("Welcome"),
+        headerSubHeading = mutableStateOf("Double Tap"),
+        flowIsVisible = mutableStateOf(true),
+        dashboardIsVisible = mutableStateOf(true),
+        drawerType = mutableStateOf("GRID"),
+        customFunctionIcon = mutableStateOf("PULSE"),
+        customFunctionPackage = mutableStateOf(""),
+        customFunctionAction = mutableStateOf("PACKAGE_RUN"),
+        dashboardPosition = mutableStateOf("BOTTOM")
+    )
+
+
     fun toggleFlowVisibility() {
-        updateFlowVisibility(!preferences.flowIsVisible.value)
+        updateFlowVisibility(!userPreferences.flowIsVisible.value)
     }
 
     fun toggleDashboardVisibility() {
-        updateDashboardVisibility(!preferences.dashboardIsVisible.value)
+        updateDashboardVisibility(!userPreferences.dashboardIsVisible.value)
     }
 
     /*
@@ -39,7 +53,7 @@ class UserPreferencesToolBox(
     -- Beginning
      */
     fun updateFlowNote(text: String) {
-        preferences.flowNote.value = text
+        userPreferences.flowNote.value = text
         warehouse.repositories.texts.insertText(
             Text(
                 title = "flowNote",
@@ -49,7 +63,7 @@ class UserPreferencesToolBox(
     }
 
     fun updateHeaderHeading(text: String) {
-        preferences.headerHeading.value = text
+        userPreferences.headerHeading.value = text
         warehouse.repositories.texts.insertText(
             Text(
                 title = "headerHeading",
@@ -59,7 +73,7 @@ class UserPreferencesToolBox(
     }
 
     fun updateHeaderSubHeading(text: String) {
-        preferences.headerSubHeading.value = text
+        userPreferences.headerSubHeading.value = text
         warehouse.repositories.texts.insertText(
             Text(
                 title = "headerSubHeading",
@@ -69,27 +83,27 @@ class UserPreferencesToolBox(
     }
 
     fun updateFlowVisibility(value: Boolean) {
-        preferences.flowIsVisible.value = value
+        userPreferences.flowIsVisible.value = value
         saveBoolean(PreferenceKeys.FLOW_VISIBILITY, value)
     }
 
-    fun updateDashboardVisibility(value: Boolean) {
-        preferences.dashboardIsVisible.value = value
+    private fun updateDashboardVisibility(value: Boolean) {
+        userPreferences.dashboardIsVisible.value = value
         saveBoolean(PreferenceKeys.DASHBOARD_VISIBILITY, value)
     }
 
     fun updateDrawerType(value: String) {
-        preferences.drawerType.value = value
+        userPreferences.drawerType.value = value
         saveString(PreferenceKeys.DRAWER_TYPE, value)
     }
 
     fun updateCustomFunctionIcon(value: String) {
-        preferences.customFunctionIcon.value = value
+        userPreferences.customFunctionIcon.value = value
         saveString(PreferenceKeys.CUSTOM_FUNCTION_ICON, value)
     }
 
     fun updateCustomFunctionPackage(value: String) {
-        preferences.customFunctionPackage.value = value
+        userPreferences.customFunctionPackage.value = value
         if (value != "") {
             updateCustomFunctionAction(ActionType.PACKAGE_RUN.name)
         }
@@ -97,7 +111,7 @@ class UserPreferencesToolBox(
     }
 
     fun updateCustomFunctionAction(value: String) {
-        preferences.customFunctionAction.value = value
+        userPreferences.customFunctionAction.value = value
         if (value == ActionType.NONE.name) {
             updateCustomFunctionPackage("")
         }
@@ -105,7 +119,7 @@ class UserPreferencesToolBox(
     }
 
     fun updateDashboardPosition(value: String) {
-        preferences.dashboardPosition.value = value
+        userPreferences.dashboardPosition.value = value
         saveString(PreferenceKeys.DASHBOARD_POSITION, value)
     }
 
@@ -114,17 +128,40 @@ class UserPreferencesToolBox(
      */
 
 
-    @OptIn(DelicateCoroutinesApi::class)
     private fun saveBoolean(key: Preferences.Key<Boolean>, value: Boolean) {
-        GlobalScope.launch(Dispatchers.Default) {
+        CoroutineScope(Dispatchers.Default).launch {
             store.edit { preferences -> preferences[key] = value }
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     private fun saveString(key: Preferences.Key<String>, value: String) {
-        GlobalScope.launch(Dispatchers.Default) {
+        CoroutineScope(Dispatchers.Default).launch {
             store.edit { preferences -> preferences[key] = value }
+        }
+    }
+
+    private suspend fun getTextFromRepo(title: String, fallback: String): String  {
+        val filteredDatabaseTexts = warehouse.repositories.texts.getByTitle(title)
+        return if (filteredDatabaseTexts.isNotEmpty()) {
+            filteredDatabaseTexts[0].text
+        } else {
+            fallback
+        }
+    }
+
+    init {
+        CoroutineScope(Dispatchers.IO).launch {
+            val preferences = store.data.first()
+            userPreferences.flowNote.value = getTextFromRepo("flowNote", userPreferences.flowNote.value)
+            userPreferences.headerHeading.value = getTextFromRepo("headerHeading", userPreferences.headerHeading.value)
+            userPreferences.headerSubHeading.value = getTextFromRepo("headerSubHeading", userPreferences.headerSubHeading.value)
+            userPreferences.flowIsVisible.value = preferences[PreferenceKeys.FLOW_VISIBILITY] ?: userPreferences.flowIsVisible.value
+            userPreferences.dashboardIsVisible.value = preferences[PreferenceKeys.DASHBOARD_VISIBILITY] ?: userPreferences.dashboardIsVisible.value
+            userPreferences.drawerType.value = preferences[PreferenceKeys.DRAWER_TYPE] ?: userPreferences.drawerType.value
+            userPreferences.customFunctionIcon.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_ICON] ?: userPreferences.customFunctionIcon.value
+            userPreferences.customFunctionPackage.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_PACKAGE] ?: userPreferences.customFunctionPackage.value
+            userPreferences.customFunctionAction.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_ACTION] ?: userPreferences.customFunctionAction.value
+            userPreferences.dashboardPosition.value = preferences[PreferenceKeys.DASHBOARD_POSITION] ?: userPreferences.dashboardPosition.value
         }
     }
 

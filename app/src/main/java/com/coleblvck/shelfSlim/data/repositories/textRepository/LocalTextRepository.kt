@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LocalTextRepository(private val localRoomDatabase: LocalRoomDatabase) {
-    fun getByTitle(title: String): List<Text> = localRoomDatabase.textDao().getByTitle(title)
+    suspend fun getByTitle(title: String): List<Text> = localRoomDatabase.textDao().getByTitle(title)
     fun insertText(text: Text) {
         CoroutineScope(Dispatchers.IO).launch {
             localRoomDatabase.textDao().insert(text)

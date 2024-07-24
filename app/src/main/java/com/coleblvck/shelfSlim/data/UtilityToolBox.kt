@@ -2,9 +2,9 @@ package com.coleblvck.shelfSlim.data
 
 import android.content.pm.PackageManager
 import com.coleblvck.shelfSlim.Shelf
-import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.widgetTool.WidgetTool
-import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.widgetTool.widgetHost
-import com.coleblvck.shelfSlim.userInterface.widgets.management.utilities.widgetTool.widgetManager
+import com.coleblvck.shelfSlim.state.stateTools.widgets.WidgetTool
+import com.coleblvck.shelfSlim.state.stateTools.widgets.widgetHost
+import com.coleblvck.shelfSlim.state.stateTools.widgets.widgetManager
 
 class UtilityToolBox(val shelf: Shelf) {
     val appPackageName: String = shelf.applicationContext.packageName

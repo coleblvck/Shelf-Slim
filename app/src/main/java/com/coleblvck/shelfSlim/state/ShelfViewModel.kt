@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.coleblvck.shelfSlim.Shelf
-import com.coleblvck.shelfSlim.contentManagement.listeners.Listeners
+import com.coleblvck.shelfSlim.content.listeners.Listeners
 import com.coleblvck.shelfSlim.data.Warehouse
-import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
-import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
-import com.coleblvck.shelfSlim.userInterface.desktop.DesktopState
+import com.coleblvck.shelfSlim.state.stateTools.widgets.WidgetToolBox
+import com.coleblvck.shelfSlim.state.stateTools.customDashboardAction.CustomDashboardActionToolBox
+import com.coleblvck.shelfSlim.ui.desktop.DesktopState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +24,7 @@ class ShelfViewModel(
 
     val desktopState = DesktopState(utilityToolBox.packageManager)
 
-    val customFunctionToolBox = CustomFunctionToolBox()
+    val customDashboardActionToolBox = CustomDashboardActionToolBox()
 
     @OptIn(ExperimentalFoundationApi::class)
     val pagesPagerState = ShelfPagerState(pageCount = 3, initialPage = 1)

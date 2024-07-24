@@ -31,7 +31,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".userInterface.widgets.management.utilities.WidgetSelectionActivity" />
+        <activity android:name=".WidgetSelectionActivity" />
     </application>
 
 </manifest>

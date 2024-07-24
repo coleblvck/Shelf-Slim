@@ -2,8 +2,8 @@ package com.coleblvck.shelfSlim.data.userPreferences
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
-import com.coleblvck.shelfSlim.userInterface.desktop.dashboard.DashboardPosition
-import com.coleblvck.shelfSlim.userInterface.desktop.dashboard.getDashboardPosition
+import com.coleblvck.shelfSlim.ui.desktop.dashboard.DashboardPosition
+import com.coleblvck.shelfSlim.ui.desktop.dashboard.getDashboardPosition
 
 data class UserPreferences(
     val flowNote: MutableState<String>,

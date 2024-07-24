@@ -12,16 +12,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowInsetsControllerCompat
-import com.coleblvck.shelfSlim.data.entities.widget.WidgetToolBox
-import com.coleblvck.shelfSlim.data.tools.CustomFunctionToolBox
-import com.coleblvck.shelfSlim.data.userPreferences.UserPreferences
 import com.coleblvck.shelfSlim.data.userPreferences.UserPreferencesToolBox
 import com.coleblvck.shelfSlim.state.ShelfPagerState
-import com.coleblvck.shelfSlim.userInterface.desktop.Desktop
-import com.coleblvck.shelfSlim.userInterface.desktop.DesktopState
-import com.coleblvck.shelfSlim.userInterface.desktop.hint.HintDialog
-import com.coleblvck.shelfSlim.userInterface.misc.CustomMappingDialog
-import com.coleblvck.shelfSlim.userInterface.widgets.WidgetSelectionSheet
+import com.coleblvck.shelfSlim.state.stateTools.customDashboardAction.CustomDashboardActionToolBox
+import com.coleblvck.shelfSlim.state.stateTools.widgets.WidgetToolBox
+import com.coleblvck.shelfSlim.ui.dashboardAction.CustomDashboardActionDialog
+import com.coleblvck.shelfSlim.ui.desktop.Desktop
+import com.coleblvck.shelfSlim.ui.desktop.DesktopState
+import com.coleblvck.shelfSlim.ui.desktop.hint.HintDialog
+import com.coleblvck.shelfSlim.ui.widgets.WidgetSelectionSheet
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 
@@ -34,11 +33,12 @@ fun ShelfLauncher(
     desktopState: DesktopState,
     flowPagerState: ShelfPagerState,
     pagesPagerState: ShelfPagerState,
-    userPreferences: UserPreferences,
     userPreferencesToolBox: UserPreferencesToolBox,
-    customFunctionToolBox: CustomFunctionToolBox,
+    customDashboardActionToolBox: CustomDashboardActionToolBox,
     widgetToolBox: WidgetToolBox
 ) {
+
+    val userPreferences = userPreferencesToolBox.userPreferences
 
     val systemUiController = rememberSystemUiController()
     systemUiController.setSystemBarsColor(
@@ -109,21 +109,21 @@ fun ShelfLauncher(
         customFunctionAction = userPreferences.customFunctionAction,
         customFunctionIcon = userPreferences.customFunctionIcon,
         customFunctionParameter = userPreferences.customFunctionPackage,
-        customFunctionToolBox = customFunctionToolBox,
+        customDashboardActionToolBox = customDashboardActionToolBox,
         showWidgetSelectionSheet = desktopState.showWidgetSelectionSheet,
         systemUiVisibilityToggle = desktopState.toggleSystemUiVisibility,
         widgetToolBox = widgetToolBox
     )
 
-    CustomMappingDialog(
+    CustomDashboardActionDialog(
         currentCustomFunctionIcon = userPreferences.customFunctionIcon,
         updateCustomFunctionIcon = userPreferencesToolBox::updateCustomFunctionIcon,
         currentCustomFunctionAction = userPreferences.customFunctionAction,
         updateCustomFunctionAction = userPreferencesToolBox::updateCustomFunctionAction,
         currentCustomFunctionParameter = userPreferences.customFunctionPackage,
         updateCustomFunctionParameter = userPreferencesToolBox::updateCustomFunctionPackage,
-        isCustomMappingDialogVisible = customFunctionToolBox.mappingDialogVisible,
-        updateCustomMappingDialogVisibility = customFunctionToolBox.setMappingDialogVisibility,
+        isCustomMappingDialogVisible = customDashboardActionToolBox.mappingDialogVisible,
+        updateCustomMappingDialogVisibility = customDashboardActionToolBox.setMappingDialogVisibility,
         allApps = desktopState.appListToolBox.allApps
     )
 

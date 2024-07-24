@@ -14,8 +14,8 @@ import com.coleblvck.shelfSlim.data.Warehouse
 import com.coleblvck.shelfSlim.data.userPreferences.shelfDataStore
 import com.coleblvck.shelfSlim.state.ShelfViewModel
 import com.coleblvck.shelfSlim.state.UserPreferencesViewModel
-import com.coleblvck.shelfSlim.state.WidgetToolProvider
-import com.coleblvck.shelfSlim.userInterface.theme.ShelfTheme
+import com.coleblvck.shelfSlim.state.stateTools.widgets.WidgetToolProvider
+import com.coleblvck.shelfSlim.ui.theme.ShelfTheme
 
 class ShelfActivity : ComponentActivity() {
     private lateinit var shelfViewModel: ShelfViewModel
@@ -39,9 +39,8 @@ class ShelfActivity : ComponentActivity() {
                             desktopState = shelfViewModel.desktopState,
                             flowPagerState = shelfViewModel.flowPagerState,
                             pagesPagerState = shelfViewModel.pagesPagerState,
-                            userPreferences = userPreferencesViewModel.userPreferences,
                             userPreferencesToolBox = userPreferencesViewModel.userPreferencesToolBox,
-                            customFunctionToolBox = shelfViewModel.customFunctionToolBox,
+                            customDashboardActionToolBox = shelfViewModel.customDashboardActionToolBox,
                             widgetToolBox = shelfViewModel.widgetToolBox
                         )
                     }
