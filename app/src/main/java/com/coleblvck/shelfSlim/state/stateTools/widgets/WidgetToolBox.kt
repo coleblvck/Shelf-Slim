@@ -153,31 +153,12 @@ class WidgetToolBox(private val localWidgetRepository: LocalWidgetRepository, ut
             }
         }
 
-    fun newWidgetAddition(id: Int) {
-        val providerInfo = widgetTool.manager.getAppWidgetInfo(id)
-        val widgetData = AppWidgetData(
-            appName = packageManager.getApplicationInfo(
-                providerInfo.provider.packageName,
-                PackageManager.GET_META_DATA
-            ).loadLabel(packageManager).toString(),
-            widgetLabel = providerInfo.loadLabel(packageManager),
-            providerInfo = providerInfo,
-            appWidgetId = id,
-            icon = providerInfo.loadIcon(shelf, imageDensity),
-            positionalIndex = userWidgets.value.size,
-            width = 50,
-            height = 200
-        )
-        _userWidgets.value = userWidgets.value.toMutableList().apply { add(userWidgets.value.size, widgetData) }
-        for (widgetDataItem in userWidgets.value) {
-            saveAppWidgetData(widgetDataItem)
-        }
-    }
-
     init {
         val liveWidgets = localWidgetRepository.getWidgets()
         liveWidgets.observeForever {
-            updateAllAppWidgetData(it)
+            if (!it.isNullOrEmpty()) {
+                updateAllAppWidgetData(it)
+            }
         }
     }
 }

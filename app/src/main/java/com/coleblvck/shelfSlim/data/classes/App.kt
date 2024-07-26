@@ -9,4 +9,6 @@ data class App(
     val packageName: String,
     val activityName: String,
     val icon: Drawable,
-)
+) {
+    val listKey = "${packageName}${activityName}"
+}

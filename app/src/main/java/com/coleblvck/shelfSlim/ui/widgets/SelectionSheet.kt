@@ -1,12 +1,8 @@
 package com.coleblvck.shelfSlim.ui.widgets
 
-import android.app.Activity
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Intent
 import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,9 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.coleblvck.shelfSlim.state.stateTools.widgets.WidgetToolBox
 import com.coleblvck.shelfSlim.IntentExtraName
 import com.coleblvck.shelfSlim.WidgetSelectionActivity
+import com.coleblvck.shelfSlim.state.stateTools.widgets.WidgetToolBox
 
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,22 +45,13 @@ fun WidgetSelectionSheet(
 ) {
     val context = LocalContext.current
     val widgetPreviews = widgetToolBox.widgetPreviews
-    val startForResult =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val intent = result.data
-                if (intent != null) {
-                    val intentWidgetId = intent.getIntExtra(IntentExtraName.WIDGET_ID_EXTRA, -1)
-                    widgetToolBox.newWidgetAddition(intentWidgetId)
-                }
-            }
-        }
 
     fun initiateWidgetAdd(providerInfo: AppWidgetProviderInfo) {
         val intent = Intent(context, WidgetSelectionActivity::class.java)
         intent.putExtra(IntentExtraName.PROVIDER_INFO_EXTRA, providerInfo)
-        startForResult.launch(intent)
+        context.startActivity(intent)
     }
+
     if (isWidgetSelectionSheetVisible.value) {
         ModalBottomSheet(
             onDismissRequest = onDismiss,

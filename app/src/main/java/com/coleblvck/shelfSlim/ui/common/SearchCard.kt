@@ -1,8 +1,10 @@
 package com.coleblvck.shelfSlim.ui.common
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +29,7 @@ import com.coleblvck.shelfSlim.content.remixIcons.remixicon.Logos
 import com.coleblvck.shelfSlim.content.remixIcons.remixicon.System
 import com.coleblvck.shelfSlim.content.remixIcons.remixicon.logos.`Firefox-fill`
 import com.coleblvck.shelfSlim.content.remixIcons.remixicon.system.`Close-circle-fill`
+import com.coleblvck.shelfSlim.content.remixIcons.remixicon.system.`Eye-off-fill`
 import com.coleblvck.shelfSlim.content.remixIcons.remixicon.system.`Search-2-fill`
 import com.coleblvck.shelfSlim.ui.theme.colorWithAlpha
 import com.coleblvck.shelfSlim.utils.Utils
@@ -37,11 +40,13 @@ fun SearchCard(
     modifier: Modifier,
     searchText: State<String>,
     searchCallback: (String) -> Unit,
+    resetVisibility: () -> Unit,
 ) {
     val context = LocalContext.current
     ElevatedCard(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxSize()
+            .animateContentSize(),
 
         colors = CardDefaults.cardColors(
             colorWithAlpha(MaterialTheme.colorScheme.tertiary).compositeOver(MaterialTheme.colorScheme.tertiary),
@@ -85,12 +90,19 @@ fun SearchCard(
                 )
                 Icon(
                     RemixIcon.System.`Close-circle-fill`,
-                    contentDescription = "Search Clear Icon",
+                    contentDescription = "Search Text Clear Icon",
                     modifier = Modifier
                         .size(30.dp)
                         .clickable { searchCallback("") }
                 )
             }
+            Icon(
+                RemixIcon.System.`Eye-off-fill`,
+                contentDescription = "Hide Search Icon",
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable { resetVisibility() }
+            )
         }
     }
 }

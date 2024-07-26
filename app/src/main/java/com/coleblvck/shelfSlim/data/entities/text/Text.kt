@@ -8,4 +8,6 @@ import androidx.room.PrimaryKey
 data class Text (
     @ColumnInfo(name = "title") @PrimaryKey val title: String,
     @ColumnInfo(name = "text") val text: String,
+    @ColumnInfo(name = "fontSize") val fontSize: Int? = null,
+    @ColumnInfo(name = "colour") val colour: Int? = null
 )

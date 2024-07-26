@@ -8,8 +8,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.coleblvck.shelfSlim.Shelf
 import com.coleblvck.shelfSlim.content.listeners.Listeners
 import com.coleblvck.shelfSlim.data.Warehouse
-import com.coleblvck.shelfSlim.state.stateTools.widgets.WidgetToolBox
 import com.coleblvck.shelfSlim.state.stateTools.customDashboardAction.CustomDashboardActionToolBox
+import com.coleblvck.shelfSlim.state.stateTools.widgets.WidgetToolBox
 import com.coleblvck.shelfSlim.ui.desktop.DesktopState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +22,7 @@ class ShelfViewModel(
 
     private val utilityToolBox = warehouse.utilityToolBox
 
-    val desktopState = DesktopState(utilityToolBox.packageManager)
+    val desktopState = DesktopState(utilityToolBox.packageManager, utilityToolBox.appPackageName)
 
     val customDashboardActionToolBox = CustomDashboardActionToolBox()
 

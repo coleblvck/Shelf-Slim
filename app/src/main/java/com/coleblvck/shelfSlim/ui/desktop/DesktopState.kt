@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import com.coleblvck.shelfSlim.state.stateTools.appList.AppListToolBox
 
 
-class DesktopState(packageManager: PackageManager) {
+class DesktopState(packageManager: PackageManager, appPackageName: String) {
 
-    val appListToolBox: AppListToolBox = AppListToolBox(packageManager)
+    val appListToolBox: AppListToolBox = AppListToolBox(packageManager, appPackageName)
 
     private val _isSystemUiVisible: MutableState<Boolean> = mutableStateOf(false)
     val isSystemUiVisible: State<Boolean> get() = _isSystemUiVisible

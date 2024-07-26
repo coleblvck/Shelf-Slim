@@ -7,6 +7,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
@@ -20,7 +22,7 @@ import com.coleblvck.shelfSlim.ui.desktop.pages.gestureBox.GestureBox
 import com.coleblvck.shelfSlim.ui.desktop.pages.widgetBoard.WidgetBoard
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun Pages(
     modifier: Modifier,
@@ -30,6 +32,9 @@ fun Pages(
     drawerType: State<String>,
     drawerSearchText: State<String>,
     drawerSearchCallback: (String) -> Unit,
+    searchCardPullState: PullRefreshState,
+    animatedSearchCardHeight: State<Int>,
+    resetSearchCardVisibility: () -> Unit,
     dashboardVisibilityToggle: () -> Unit,
     showWidgetSelectionSheet: () -> Unit,
     widgetToolBox: WidgetToolBox,
@@ -52,6 +57,9 @@ fun Pages(
                 drawerType = drawerType,
                 drawerSearchText = drawerSearchText,
                 drawerSearchCallback = drawerSearchCallback,
+                searchCardPullState = searchCardPullState,
+                animatedSearchCardHeight = animatedSearchCardHeight,
+                resetSearchCardVisibility = resetSearchCardVisibility
             )
 
             1 -> GestureBox(

@@ -15,9 +15,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.alpha
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
+import com.coleblvck.shelfSlim.data.entities.text.Text
+import com.coleblvck.shelfSlim.ui.common.toColour
 import com.coleblvck.shelfSlim.ui.theme.colorWithAlpha
 
 
@@ -25,10 +32,12 @@ import com.coleblvck.shelfSlim.ui.theme.colorWithAlpha
 @Composable
 fun FlowHeader(
     shouldPadPagerItemHorizontally: State<Boolean>,
-    flowHeaderHeading: State<String>,
-    updateFlowHeaderHeading: (String) -> Unit,
-    flowHeaderSubHeading: State<String>,
-    updateFlowHeaderSubHeading: (String) -> Unit,
+    flowHeaderHeading: State<Text>,
+    updateFlowHeaderHeading: (Text) -> Unit,
+    flowHeaderSubHeading: State<Text>,
+    updateFlowHeaderSubHeading: (Text) -> Unit,
+    flowHeaderBackground: State<Int?>,
+    updateFlowHeaderBackground: (Int?) -> Unit,
     flowHeaderEditDialogVisible: State<Boolean>,
     updateFlowHeaderEditDialogVisibility: (Boolean) -> Unit,
     updateHintVisibility: (Boolean) -> Unit,
@@ -38,6 +47,8 @@ fun FlowHeader(
         updateFlowHeaderHeading = updateFlowHeaderHeading,
         flowHeaderSubHeading = flowHeaderSubHeading,
         updateFlowHeaderSubHeading = updateFlowHeaderSubHeading,
+        flowHeaderBackground = flowHeaderBackground,
+        updateFlowHeaderBackground = updateFlowHeaderBackground,
         flowHeaderEditDialogVisible = flowHeaderEditDialogVisible,
         updateFlowHeaderEditDialogVisibility = updateFlowHeaderEditDialogVisibility
     )
@@ -57,7 +68,8 @@ fun FlowHeader(
                 onLongClick = { updateFlowHeaderEditDialogVisibility(true) },
             ),
         colors = CardDefaults.cardColors(
-            colorWithAlpha(MaterialTheme.colorScheme.background),
+            containerColor = flowHeaderBackground.value?.toColour()
+                ?: colorWithAlpha(MaterialTheme.colorScheme.background),
             MaterialTheme.colorScheme.onBackground,
             MaterialTheme.colorScheme.background,
             MaterialTheme.colorScheme.onBackground
@@ -69,17 +81,32 @@ fun FlowHeader(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (flowHeaderHeading.value != "") {
+                if (flowHeaderHeading.value.text != "") {
+                    val headingColourInt = flowHeaderHeading.value.colour
+                    val headingFontSize = flowHeaderHeading.value.fontSize
                     Text(
-                        text = flowHeaderHeading.value,
-                        fontSize = 60.sp,
+                        color = headingColourInt?.toColour() ?: Color.Unspecified,
+                        text = flowHeaderHeading.value.text,
+                        fontSize = headingFontSize?.sp ?: 60.sp,
                         fontWeight = FontWeight.W900
                     )
                 }
-                if (flowHeaderSubHeading.value != "") {
+                if (flowHeaderSubHeading.value.text != "") {
+                    val subHeadingColour = flowHeaderSubHeading.value.colour
+                    val subHeadingFontSize = flowHeaderSubHeading.value.fontSize
                     Text(
-                        text = flowHeaderSubHeading.value,
-                        fontSize = 20.sp,
+                        color = if (subHeadingColour != null) {
+                            Color(
+                                subHeadingColour.red,
+                                subHeadingColour.green,
+                                subHeadingColour.blue,
+                                subHeadingColour.alpha
+                            )
+                        } else {
+                            Color.Unspecified
+                        },
+                        text = flowHeaderSubHeading.value.text,
+                        fontSize = subHeadingFontSize?.sp ?: 20.sp,
                         fontWeight = FontWeight.W500
                     )
                 }

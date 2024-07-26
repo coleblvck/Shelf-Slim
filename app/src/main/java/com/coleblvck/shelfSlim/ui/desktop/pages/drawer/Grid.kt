@@ -11,6 +11,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -20,12 +23,14 @@ import androidx.compose.ui.unit.dp
 import com.coleblvck.shelfSlim.data.classes.App
 import com.coleblvck.shelfSlim.ui.theme.colorWithAlpha
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Grid(
     shouldPadPagerItemHorizontally: State<Boolean>,
     drawerApps: State<List<App>>,
     state: LazyStaggeredGridState = rememberLazyStaggeredGridState(),
-    contentPadding: PaddingValues = PaddingValues(8.dp)
+    contentPadding: PaddingValues = PaddingValues(8.dp),
+    pullRefreshState: PullRefreshState,
 ) {
     Surface(
         modifier = Modifier
@@ -42,7 +47,7 @@ fun Grid(
         shape = RoundedCornerShape(12.dp)
     ) {
         LazyVerticalStaggeredGrid(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().pullRefresh(state = pullRefreshState),
             state = state,
             columns = StaggeredGridCells.Adaptive(60.dp),
             contentPadding = contentPadding,
@@ -52,7 +57,7 @@ fun Grid(
         ) {
             items(
                 drawerApps.value,
-                key = { "${it.packageName}${it.activityName}" }
+                key = { it.listKey }
             ) { app ->
                 DrawerAppItem(
                     app = app,

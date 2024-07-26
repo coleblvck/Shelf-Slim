@@ -2,13 +2,15 @@ package com.coleblvck.shelfSlim.data.userPreferences
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
+import com.coleblvck.shelfSlim.data.entities.text.Text
 import com.coleblvck.shelfSlim.ui.desktop.dashboard.DashboardPosition
 import com.coleblvck.shelfSlim.ui.desktop.dashboard.getDashboardPosition
 
 data class UserPreferences(
-    val flowNote: MutableState<String>,
-    val headerHeading: MutableState<String>,
-    val headerSubHeading: MutableState<String>,
+    val flowNote: MutableState<Text>,
+    val headerHeading: MutableState<Text>,
+    val headerSubHeading: MutableState<Text>,
+    val headerBackground: MutableState<Int?>,
     val flowIsVisible: MutableState<Boolean>,
     val dashboardIsVisible: MutableState<Boolean>,
     val drawerType: MutableState<String>,

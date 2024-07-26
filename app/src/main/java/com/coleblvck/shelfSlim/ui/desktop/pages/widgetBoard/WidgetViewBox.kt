@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -95,57 +98,75 @@ fun WidgetViewBox(
             )
 
             if (widgetToolBox.userWidgets.value.size > 1) {
-                FlowColumn(
+                Card (
                     modifier = Modifier.align(Alignment.CenterStart),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.onBackground
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    val widgetIndex =
-                        widgetToolBox.userWidgets.value.indexOf(appWidgetData)
-                    if (widgetIndex != 0) {
-                        ShelfIconButtonCard(
-                            clickAction = {
-                                widgetToolBox.reorderUserWidgets(
-                                    widgetIndex,
-                                    widgetIndex - 1
-                                )
-                            },
-                            vector = RemixIcon.Arrows.`Arrow-up-fill`,
-                        )
+                    FlowColumn(
+                        modifier = Modifier.padding(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        val widgetIndex =
+                            widgetToolBox.userWidgets.value.indexOf(appWidgetData)
+                        if (widgetIndex != 0) {
+                            ShelfIconButtonCard(
+                                clickAction = {
+                                    widgetToolBox.reorderUserWidgets(
+                                        widgetIndex,
+                                        widgetIndex - 1
+                                    )
+                                },
+                                vector = RemixIcon.Arrows.`Arrow-up-fill`,
+                            )
 
-                    }
-                    if (widgetIndex != widgetToolBox.userWidgets.value.size - 1) {
-                        ShelfIconButtonCard(
-                            clickAction = {
-                                widgetToolBox.reorderUserWidgets(
-                                    widgetIndex,
-                                    widgetIndex + 1
-                                )
-                            },
-                            vector = RemixIcon.Arrows.`Arrow-down-fill`,
-                        )
+                        }
+                        if (widgetIndex != widgetToolBox.userWidgets.value.size - 1) {
+                            ShelfIconButtonCard(
+                                clickAction = {
+                                    widgetToolBox.reorderUserWidgets(
+                                        widgetIndex,
+                                        widgetIndex + 1
+                                    )
+                                },
+                                vector = RemixIcon.Arrows.`Arrow-down-fill`,
+                            )
+                        }
                     }
                 }
             }
-            Row(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            Card (
+                modifier =  Modifier.align(Alignment.BottomCenter),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                if (appWidgetData.providerInfo.configure != null) {
+                Row(
+                    modifier = Modifier.padding(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    if (appWidgetData.providerInfo.configure != null) {
+                        ShelfIconButtonCard(
+                            clickAction = ::reConfigureWidget,
+                            vector = RemixIcon.System.`Settings-4-fill`,
+                        )
+                    }
+                    VerticalDragHandle(
+                        whileDragging = ::adjustHeight,
+                        onDragStopped = ::updateWidgetHeight
+                    )
                     ShelfIconButtonCard(
-                        clickAction = ::reConfigureWidget,
-                        vector = RemixIcon.System.`Settings-4-fill`,
+                        clickAction = { widgetToolBox.removeUserWidget(appWidgetData.appWidgetId) },
+                        vector = RemixIcon.System.`Delete-bin-7-fill`
                     )
                 }
-                VerticalDragHandle(
-                    whileDragging = ::adjustHeight,
-                    onDragStopped = ::updateWidgetHeight
-                )
-                ShelfIconButtonCard(
-                    clickAction = { widgetToolBox.removeUserWidget(appWidgetData.appWidgetId) },
-                    vector = RemixIcon.System.`Delete-bin-7-fill`
-                )
             }
         }
     }
@@ -161,12 +182,14 @@ fun ShelfIconButtonCard(
     Surface(
         modifier = modifier
             .clickable { clickAction() },
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.tertiary,
+        contentColor = MaterialTheme.colorScheme.onTertiary
     ) {
         DisplayIcon(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier
+                .padding(4.dp)
+                .size(28.dp),
             vector = vector,
         )
     }

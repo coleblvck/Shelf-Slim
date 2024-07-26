@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.coleblvck.shelfSlim.data.Warehouse
@@ -27,9 +28,25 @@ class UserPreferencesToolBox(
 ) {
 
     val userPreferences = UserPreferences(
-        flowNote = mutableStateOf(""),
-        headerHeading = mutableStateOf("Welcome"),
-        headerSubHeading = mutableStateOf("Double Tap"),
+        flowNote = mutableStateOf(
+            Text(
+                title = "flowNote",
+                text = ""
+            )
+        ),
+        headerHeading = mutableStateOf(
+            Text(
+                title = "headerHeading",
+                text = "Welcome"
+            )
+        ),
+        headerSubHeading = mutableStateOf(
+            Text(
+                title = "headerSubHeading",
+                text = "Double Tap"
+            )
+        ),
+        headerBackground = mutableStateOf(null),
         flowIsVisible = mutableStateOf(true),
         dashboardIsVisible = mutableStateOf(true),
         drawerType = mutableStateOf("GRID"),
@@ -52,34 +69,31 @@ class UserPreferencesToolBox(
     Update preference fields
     -- Beginning
      */
-    fun updateFlowNote(text: String) {
+    fun updateFlowNote(text: Text) {
         userPreferences.flowNote.value = text
         warehouse.repositories.texts.insertText(
-            Text(
-                title = "flowNote",
-                text = text
-            )
+            text
         )
     }
 
-    fun updateHeaderHeading(text: String) {
+    fun updateHeaderHeading(text: Text) {
         userPreferences.headerHeading.value = text
         warehouse.repositories.texts.insertText(
-            Text(
-                title = "headerHeading",
-                text = text
-            )
+            text
         )
     }
 
-    fun updateHeaderSubHeading(text: String) {
+    fun updateHeaderSubHeading(text: Text) {
         userPreferences.headerSubHeading.value = text
         warehouse.repositories.texts.insertText(
-            Text(
-                title = "headerSubHeading",
-                text = text
-            )
+            text
         )
+    }
+
+    fun updateHeaderBackground(color: Int?) {
+        userPreferences.headerBackground.value = color
+        saveInt(PreferenceKeys.HEADER_BACKGROUND, color)
+
     }
 
     fun updateFlowVisibility(value: Boolean) {
@@ -140,10 +154,20 @@ class UserPreferencesToolBox(
         }
     }
 
-    private suspend fun getTextFromRepo(title: String, fallback: String): String  {
+    private fun saveInt(key: Preferences.Key<Int>, value: Int?) {
+        CoroutineScope(Dispatchers.Default).launch {
+            if (value != null) {
+                store.edit { preferences -> preferences[key] = value }
+            } else {
+                store.edit { preferences -> preferences.remove(key) }
+            }
+        }
+    }
+
+    private suspend fun getTextFromRepo(title: String, fallback: Text): Text {
         val filteredDatabaseTexts = warehouse.repositories.texts.getByTitle(title)
         return if (filteredDatabaseTexts.isNotEmpty()) {
-            filteredDatabaseTexts[0].text
+            filteredDatabaseTexts[0]
         } else {
             fallback
         }
@@ -152,16 +176,31 @@ class UserPreferencesToolBox(
     init {
         CoroutineScope(Dispatchers.IO).launch {
             val preferences = store.data.first()
-            userPreferences.flowNote.value = getTextFromRepo("flowNote", userPreferences.flowNote.value)
-            userPreferences.headerHeading.value = getTextFromRepo("headerHeading", userPreferences.headerHeading.value)
-            userPreferences.headerSubHeading.value = getTextFromRepo("headerSubHeading", userPreferences.headerSubHeading.value)
-            userPreferences.flowIsVisible.value = preferences[PreferenceKeys.FLOW_VISIBILITY] ?: userPreferences.flowIsVisible.value
-            userPreferences.dashboardIsVisible.value = preferences[PreferenceKeys.DASHBOARD_VISIBILITY] ?: userPreferences.dashboardIsVisible.value
-            userPreferences.drawerType.value = preferences[PreferenceKeys.DRAWER_TYPE] ?: userPreferences.drawerType.value
-            userPreferences.customFunctionIcon.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_ICON] ?: userPreferences.customFunctionIcon.value
-            userPreferences.customFunctionPackage.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_PACKAGE] ?: userPreferences.customFunctionPackage.value
-            userPreferences.customFunctionAction.value = preferences[PreferenceKeys.CUSTOM_FUNCTION_ACTION] ?: userPreferences.customFunctionAction.value
-            userPreferences.dashboardPosition.value = preferences[PreferenceKeys.DASHBOARD_POSITION] ?: userPreferences.dashboardPosition.value
+            userPreferences.flowNote.value =
+                getTextFromRepo("flowNote", userPreferences.flowNote.value)
+            userPreferences.headerHeading.value =
+                getTextFromRepo("headerHeading", userPreferences.headerHeading.value)
+            userPreferences.headerSubHeading.value =
+                getTextFromRepo("headerSubHeading", userPreferences.headerSubHeading.value)
+            userPreferences.headerBackground.value = preferences[PreferenceKeys.HEADER_BACKGROUND]
+            userPreferences.flowIsVisible.value =
+                preferences[PreferenceKeys.FLOW_VISIBILITY] ?: userPreferences.flowIsVisible.value
+            userPreferences.dashboardIsVisible.value =
+                preferences[PreferenceKeys.DASHBOARD_VISIBILITY]
+                    ?: userPreferences.dashboardIsVisible.value
+            userPreferences.drawerType.value =
+                preferences[PreferenceKeys.DRAWER_TYPE] ?: userPreferences.drawerType.value
+            userPreferences.customFunctionIcon.value =
+                preferences[PreferenceKeys.CUSTOM_FUNCTION_ICON]
+                    ?: userPreferences.customFunctionIcon.value
+            userPreferences.customFunctionPackage.value =
+                preferences[PreferenceKeys.CUSTOM_FUNCTION_PACKAGE]
+                    ?: userPreferences.customFunctionPackage.value
+            userPreferences.customFunctionAction.value =
+                preferences[PreferenceKeys.CUSTOM_FUNCTION_ACTION]
+                    ?: userPreferences.customFunctionAction.value
+            userPreferences.dashboardPosition.value = preferences[PreferenceKeys.DASHBOARD_POSITION]
+                ?: userPreferences.dashboardPosition.value
         }
     }
 
@@ -169,6 +208,7 @@ class UserPreferencesToolBox(
         val FLOW_NOTE = stringPreferencesKey("noteText")
         val HEADER_HEADING = stringPreferencesKey("headerHeading")
         val HEADER_SUB_HEADING = stringPreferencesKey("headerSubHeading")
+        val HEADER_BACKGROUND = intPreferencesKey("headerBackground")
         val FLOW_VISIBILITY = booleanPreferencesKey("flowVisibility")
         val DASHBOARD_VISIBILITY = booleanPreferencesKey("dashboardVisibility")
         val DRAWER_TYPE = stringPreferencesKey("drawerType")

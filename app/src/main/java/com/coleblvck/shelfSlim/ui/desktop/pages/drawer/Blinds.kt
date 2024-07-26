@@ -9,6 +9,9 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -17,12 +20,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.coleblvck.shelfSlim.data.classes.App
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Blinds(
     shouldPadPagerItemHorizontally: State<Boolean>,
     drawerApps: State<List<App>>,
     state: LazyListState = rememberLazyListState(),
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    pullRefreshState: PullRefreshState,
 ) {
     Surface(
         modifier = Modifier
@@ -39,14 +44,14 @@ fun Blinds(
         shape = RoundedCornerShape(12.dp)
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().pullRefresh(state = pullRefreshState),
             state = state,
             contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(
                 drawerApps.value,
-                key = { "${it.packageName}${it.activityName}" }
+                key = { it.listKey }
             ) { app ->
                 DrawerAppItem(
                     app = app,

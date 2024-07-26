@@ -21,6 +21,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.coleblvck.shelfSlim.data.entities.text.Text
 import com.coleblvck.shelfSlim.ui.theme.colorWithAlpha
 
 
@@ -28,8 +29,8 @@ import com.coleblvck.shelfSlim.ui.theme.colorWithAlpha
 @Composable
 fun FlowNote(
     shouldPadPagerItemHorizontally: State<Boolean>,
-    flowNoteText: State<String>,
-    updateFlowNoteText: (String) -> Unit,
+    flowNoteText: State<Text>,
+    updateFlowNoteText: (Text) -> Unit,
 ) {
     val enabled by remember {
         mutableStateOf(true)
@@ -59,8 +60,8 @@ fun FlowNote(
             modifier = Modifier
                 .padding(12.dp)
                 .fillMaxSize(),
-            value = flowNoteText.value,
-            onValueChange = updateFlowNoteText,
+            value = flowNoteText.value.text,
+            onValueChange = { newValue -> updateFlowNoteText(flowNoteText.value.copy(text = newValue)) },
             visualTransformation = VisualTransformation.None,
             interactionSource = interactionSource,
             enabled = enabled,
@@ -73,7 +74,7 @@ fun FlowNote(
         ) {
                 innerTextField ->
             OutlinedTextFieldDefaults.DecorationBox(
-                value = flowNoteText.value,
+                value = flowNoteText.value.text,
                 innerTextField = innerTextField,
                 enabled = enabled,
                 singleLine = singleLine,

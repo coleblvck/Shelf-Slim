@@ -16,6 +16,7 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.coleblvck.shelfSlim.data.entities.text.Text
 import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.ui.desktop.flow.flowHeader.FlowHeader
 import com.coleblvck.shelfSlim.ui.desktop.flow.flowNote.FlowNote
@@ -27,14 +28,16 @@ fun Flow(
     shouldPadPagerItemHorizontally: State<Boolean>,
     isFlowVisible: State<Boolean>,
     flowPagerState: ShelfPagerState,
-    flowHeaderHeading: State<String>,
-    updateFlowHeaderHeading: (String) -> Unit,
-    flowHeaderSubHeading: State<String>,
-    updateFlowHeaderSubHeading: (String) -> Unit,
+    flowHeaderHeading: State<Text>,
+    updateFlowHeaderHeading: (Text) -> Unit,
+    flowHeaderSubHeading: State<Text>,
+    updateFlowHeaderSubHeading: (Text) -> Unit,
+    flowHeaderBackground: State<Int?>,
+    updateFlowHeaderBackground: (Int?) -> Unit,
     flowHeaderEditDialogVisible: State<Boolean>,
     updateFlowHeaderEditDialogVisibility: (Boolean) -> Unit,
-    flowNoteText: State<String>,
-    updateFlowNoteText: (String) -> Unit,
+    flowNoteText: State<Text>,
+    updateFlowNoteText: (Text) -> Unit,
     updateHintVisibility: (Boolean) -> Unit,
 ) {
     AnimatedVisibility(
@@ -56,6 +59,8 @@ fun Flow(
                         updateFlowHeaderHeading = updateFlowHeaderHeading,
                         flowHeaderSubHeading = flowHeaderSubHeading,
                         updateFlowHeaderSubHeading = updateFlowHeaderSubHeading,
+                        flowHeaderBackground = flowHeaderBackground,
+                        updateFlowHeaderBackground = updateFlowHeaderBackground,
                         flowHeaderEditDialogVisible = flowHeaderEditDialogVisible,
                         updateFlowHeaderEditDialogVisibility = updateFlowHeaderEditDialogVisibility,
                         updateHintVisibility = updateHintVisibility

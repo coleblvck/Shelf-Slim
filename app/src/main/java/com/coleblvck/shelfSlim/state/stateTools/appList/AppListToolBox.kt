@@ -12,7 +12,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 
-class AppListToolBox(private val packageManager: PackageManager) {
+class AppListToolBox(private val packageManager: PackageManager, private val appPackageName: String) {
 
     private val _allApps: MutableState<List<App>> = mutableStateOf(
         listOf()
@@ -40,7 +40,7 @@ class AppListToolBox(private val packageManager: PackageManager) {
         )
         val userAppList = ArrayList<App>()
         for (appInfo in allAppsList) {
-            if (appInfo.activityInfo.packageName != "com.coleblvck.shelfSlim") {
+            if (appInfo.activityInfo.packageName != appPackageName) {
                 val app = App(
                     name = appInfo.loadLabel(packageManager).toString(),
                     packageName = appInfo.activityInfo.packageName,

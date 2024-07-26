@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.coleblvck.shelfSlim.data.classes.App
+import com.coleblvck.shelfSlim.data.entities.text.Text
 import com.coleblvck.shelfSlim.state.ShelfPagerState
 import com.coleblvck.shelfSlim.state.stateTools.customDashboardAction.CustomDashboardActionToolBox
 import com.coleblvck.shelfSlim.state.stateTools.widgets.WidgetToolBox
@@ -27,20 +30,23 @@ import com.coleblvck.shelfSlim.ui.desktop.dashboard.getDashboardPosition
 import com.coleblvck.shelfSlim.ui.desktop.flow.Flow
 import com.coleblvck.shelfSlim.ui.desktop.pages.Pages
 
+@OptIn(ExperimentalMaterialApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Desktop(
     isFlowVisible: State<Boolean>,
     flowVisibilityToggle: () -> Unit,
     flowPagerState: ShelfPagerState,
-    flowHeaderHeading: State<String>,
-    updateFlowHeaderHeading: (String) -> Unit,
-    flowHeaderSubHeading: State<String>,
-    updateFlowHeaderSubHeading: (String) -> Unit,
+    flowHeaderHeading: State<Text>,
+    updateFlowHeaderHeading: (Text) -> Unit,
+    flowHeaderSubHeading: State<Text>,
+    updateFlowHeaderSubHeading: (Text) -> Unit,
+    flowHeaderBackground: State<Int?>,
+    updateFlowHeaderBackground: (Int?) -> Unit,
     flowHeaderEditDialogVisible: State<Boolean>,
     updateFlowHeaderEditDialogVisibility: (Boolean) -> Unit,
-    flowNoteText: State<String>,
-    updateFlowNoteText: (String) -> Unit,
+    flowNoteText: State<Text>,
+    updateFlowNoteText: (Text) -> Unit,
     flowAnimateToNote: () -> Unit,
     updateHintVisibility: (Boolean) -> Unit,
     pagesPagerState: ShelfPagerState,
@@ -49,6 +55,9 @@ fun Desktop(
     updateDrawerType: (String) -> Unit,
     drawerSearchText: State<String>,
     drawerSearchCallback: (String) -> Unit,
+    searchCardPullState: PullRefreshState,
+    animatedSearchCardHeight: State<Int>,
+    resetSearchCardVisibility: () -> Unit,
     dashboardIsHorizontal: State<Boolean>,
     currentDashboardPosition: State<String>,
     updateDashboardPosition: (String) -> Unit,
@@ -82,6 +91,8 @@ fun Desktop(
             updateFlowHeaderHeading = updateFlowHeaderHeading,
             flowHeaderSubHeading = flowHeaderSubHeading,
             updateFlowHeaderSubHeading = updateFlowHeaderSubHeading,
+            flowHeaderBackground = flowHeaderBackground,
+            updateFlowHeaderBackground = updateFlowHeaderBackground,
             flowHeaderEditDialogVisible = flowHeaderEditDialogVisible,
             updateFlowHeaderEditDialogVisibility = updateFlowHeaderEditDialogVisibility,
             flowNoteText = flowNoteText,
@@ -100,6 +111,9 @@ fun Desktop(
             drawerType = drawerType,
             drawerSearchText = drawerSearchText,
             drawerSearchCallback = drawerSearchCallback,
+            searchCardPullState = searchCardPullState,
+            animatedSearchCardHeight = animatedSearchCardHeight,
+            resetSearchCardVisibility = resetSearchCardVisibility,
             dashboardVisibilityToggle = dashboardVisibilityToggle,
             showWidgetSelectionSheet = showWidgetSelectionSheet,
             widgetToolBox = widgetToolBox
