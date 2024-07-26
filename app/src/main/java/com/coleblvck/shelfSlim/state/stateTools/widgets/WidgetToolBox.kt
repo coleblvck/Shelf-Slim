@@ -17,7 +17,10 @@ import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
 import kotlin.math.roundToInt
 
-class WidgetToolBox(private val localWidgetRepository: LocalWidgetRepository, utilityToolBox: UtilityToolBox) {
+class WidgetToolBox(
+    private val localWidgetRepository: LocalWidgetRepository,
+    utilityToolBox: UtilityToolBox
+) {
 
 
     val shelf: Context = utilityToolBox.shelf.applicationContext
@@ -61,27 +64,28 @@ class WidgetToolBox(private val localWidgetRepository: LocalWidgetRepository, ut
     }
 
 
-
     private fun updateAllAppWidgetData(widgetList: List<Widget>) {
         val allAppWidgetData: MutableList<AppWidgetData> = mutableListOf()
         for (widget: Widget in widgetList) {
             val providerInfo = widgetTool.manager.getAppWidgetInfo(widget.id)
-            val appInfo = packageManager.getApplicationInfo(
-                providerInfo.provider.packageName,
-                0
-            )
-            val appWidgetData = AppWidgetData(
-                appWidgetId = widget.id,
-                providerInfo = providerInfo,
-                appName = packageManager.getApplicationLabel(appInfo).toString(),
-                widgetLabel = providerInfo.loadLabel(packageManager),
-                icon = providerInfo.loadIcon(shelf, imageDensity),
-                positionalIndex = widget.positionalIndex,
-                width = widget.width,
-                height = widget.height
+            if (providerInfo != null) {
+                val appInfo = packageManager.getApplicationInfo(
+                    providerInfo.provider.packageName,
+                    0
+                )
+                val appWidgetData = AppWidgetData(
+                    appWidgetId = widget.id,
+                    providerInfo = providerInfo,
+                    appName = packageManager.getApplicationLabel(appInfo).toString(),
+                    widgetLabel = providerInfo.loadLabel(packageManager),
+                    icon = providerInfo.loadIcon(shelf, imageDensity),
+                    positionalIndex = widget.positionalIndex,
+                    width = widget.width,
+                    height = widget.height
 
-            )
-            allAppWidgetData.add(appWidgetData)
+                )
+                allAppWidgetData.add(appWidgetData)
+            }
         }
         allAppWidgetData.sortBy { it.positionalIndex }
         _userWidgets.value = allAppWidgetData
@@ -120,7 +124,7 @@ class WidgetToolBox(private val localWidgetRepository: LocalWidgetRepository, ut
     }
 
     fun updateUserWidgetHeight(widgetData: AppWidgetData, value: Int) {
-        var height  = value
+        var height = value
         if (height < 80) {
             height = 80
         }
